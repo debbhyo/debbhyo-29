@@ -97,10 +97,11 @@ const server = app.listen(port, () => console.log(`Example app listening at http
 const io = require('socket.io')(server);
 
 io.on('connection', function(socket) {
-    if (socket.handshake.query.identity) {
+    if (socket.handshake.query.identity && identities[socket.handshake.query.identity]) {
         identities[socket.handshake.query.identity]['socket'] = socket.id
         socket.on('SEND_MESSAGE', function(data) {
             io.emit('MESSAGE', data)
         });
+        io.emit('UPDATE_TABLE', table.qwerty123)
     }
 });
