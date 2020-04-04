@@ -88,9 +88,11 @@ app.post('/login', (req, res) => {
     } else {
         error = "Something went wrong!"
     }
-    res.json({
-        error: error
-    })
+    if (error) {
+        res.json({
+            error: error
+        })
+    }
 })
 const server = app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
 
@@ -101,6 +103,10 @@ io.on('connection', function(socket) {
         identities[socket.handshake.query.identity]['socket'] = socket.id
         socket.on('SEND_MESSAGE', function(data) {
             io.emit('MESSAGE', data)
+        });
+        socket.on('UPDATE_ME', function(data) {
+            console.log('UPDATE_ME recieved')
+            socket.emit('UPDATE_TABLE', table.qwerty123)
         });
         io.emit('UPDATE_TABLE', table.qwerty123)
     }

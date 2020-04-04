@@ -225,6 +225,21 @@ export default {
             });
             this.message = ''
         },
+        initiateSocketConnection() {
+            this.socket = io('localhost:3000', {query : "identity=" + this.identity,autoConnect: false})
+            this.socket.on('connect', () => {
+                this.socket.emit('UPDATE_ME')
+            })
+            this.socket.on('MESSAGE', (data) => {
+                this.messages = [...this.messages, data];
+                // you can also do this.messages.push(data)
+            });
+            this.socket.on('UPDATE_TABLE', (data) => {
+                this.tableData = data;
+                // you can also do this.messages.push(data)
+            });
+            this.socket.open();
+        },
         login(e) {
             e.preventDefault();
             if (this.username && this.username.length > 0 && this.table && this.table.length > 0) {
@@ -233,6 +248,7 @@ export default {
                     if (resp.loggedIn === true) {
                         this.isLoggedIn = resp.loggedIn
                         this.identityInfo = resp.info
+                        this.initiateSocketConnection()
                     } else {
                         if (resp.error) {
                             this.loginError = resp.error
@@ -249,16 +265,8 @@ export default {
             this.isLoggedIn = resp.loggedIn
             if (resp.loggedIn) {
                 this.identityInfo = resp.info
+                this.initiateSocketConnection()
             }
-            this.socket = io.connect('localhost:3000', {query : "identity=" + this.identity})
-            this.socket.on('MESSAGE', (data) => {
-                this.messages = [...this.messages, data];
-                // you can also do this.messages.push(data)
-            });
-            this.socket.on('UPDATE_TABLE', (data) => {
-                this.tableData = data;
-                // you can also do this.messages.push(data)
-            });
         })
     }
 }
