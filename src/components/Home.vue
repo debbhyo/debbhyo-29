@@ -4,11 +4,11 @@
             <template v-if="tableData">
                 <div class="col-9 board-left" v-if="tableData.playersCount === 4">
                     <div class="row board-row-top" style="text-align: center;">
-                        <div style="width:100%;"><h4 class="mb-0">{{this.config['p' + ((this.config.me + 2) % 4)]['name']}}</h4></div>
+                        <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4></div>
                         <div class="col-12 palyer-1" style="transform: rotate(180deg); text-align: center;">
                             <div style="width: 235px;">
                                 <ul class="hand">
-                                    <li v-for="n in this.config['p' + ((this.config.me + 2) % 4)]['cardCount']">
+                                    <li v-for="n in this.tableData['p' + ((this.tableData.me + 2) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
@@ -19,43 +19,43 @@
                         <div class="col-3 palyer-1" style="text-align: center;">
                             <div style="transform: rotate(90deg); width: 235px;">
                                 <ul class="hand">
-                                    <li v-for="n in this.config['p' + ((this.config.me + 3) % 4)]['cardCount']">
+                                    <li v-for="n in this.tableData['p' + ((this.tableData.me + 3) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.config['p' + ((this.config.me + 3) % 4)]['name']}}</h4></div>
+                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}</h4></div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="row h-100">
                                 <div class="col-4 h-100" style="display: flex;align-items: center;justify-content: center;">
-                                    <div class="cardd rank-7 spades" style="text-align: center;">
-                                        <span class="rank">7</span>
-                                        <span class="suit">&spades;</span>
+                                    <div class="cardd rank-7 spades" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me + 2) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me + 2) % 4)]['tableCard']">
+                                        <span class="rank">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['tableCard']['number']}}</span>
+                                        <span class="suit" v-html="'&' + this.tableData['p' + ((this.tableData.me + 2) % 4)]['tableCard']['suit'].suit + ';'"></span>
                                     </div>
                                 </div>
                                 <div class="col-4 h-100">
                                     <div class="row h-50">
                                         <div class="col-12" style="display: flex;align-items: center;justify-content: center;">
-                                            <div class="cardd rank-7 spades" style="text-align: center;">
-                                                <span class="rank">7</span>
-                                                <span class="suit">&spades;</span>
+                                            <div class="cardd rank-7 spades" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']">
+                                                <span class="rank">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']['number']}}</span>
+                                                <span class="suit" v-html="'&' + this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']['suit'].suit + ';'"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row h-50">
                                         <div class="col-12" style="display: flex;align-items: center;justify-content: center;">
-                                            <div class="cardd rank-7 spades" style="text-align: center;">
-                                                <span class="rank">7</span>
-                                                <span class="suit">&spades;</span>
+                                            <div class="cardd rank-7 spades" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me) % 4)]['tableCard']">
+                                                <span class="rank">{{this.tableData['p' + ((this.tableData.me) % 4)]['tableCard']['number']}}</span>
+                                                <span class="suit" v-html="'&' + this.tableData['p' + ((this.tableData.me) % 4)]['tableCard']['suit'].suit + ';'"></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-4" style="display: flex;align-items: center;justify-content: center;">
-                                    <div class="cardd rank-7 spades" style="text-align: center;">
-                                        <span class="rank">7</span>
-                                        <span class="suit">&spades;</span>
+                                    <div class="cardd rank-7 spades" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me + 1) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me + 1) % 4)]['tableCard']">
+                                        <span class="rank">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['tableCard']['number']}}</span>
+                                        <span class="suit" v-html="'&' + this.tableData['p' + ((this.tableData.me + 1) % 4)]['tableCard']['suit'].suit + ';'"></span>
                                     </div>
                                 </div>
                             </div>
@@ -63,18 +63,18 @@
                         <div class="col-3 palyer-1" style="text-align: center;">
                             <div style="transform: rotate(-90deg); width: 235px;">
                                 <ul class="hand">
-                                    <li v-for="n in this.config['p' + ((this.config.me + 1) % 4)]['cardCount']">
+                                    <li v-for="n in this.tableData['p' + ((this.tableData.me + 1) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.config['p' + ((this.config.me + 1) % 4)]['name']}}</h4></div>
+                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}</h4></div>
                             </div>
                         </div>
                     </div>
                     <div class="row board-bottom-row">
                         <div class="col-12 pt-5" style="text-align: center; display:flex; align-items: center;justify-content: center;">
 
-                            <a class="cardd" :class="getClasses(card.number,card.suit)" v-for="(card,index) in this.config.myCards" :key="index">
+                            <a class="cardd" :class="getClasses(card.number,card.suit)" v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']" :key="index">
                                 <span class="rank">{{card.number}}</span>
                                 <span class="suit" v-html="'&' + card.suit + ';'"></span>
                             </a>
@@ -151,66 +151,18 @@ export default {
             identityInfo: null,
             username: null,
             tableData: null,
-            loginError: null,
-            config: {
-                p0 : {
-                    name:"rahul",
-                    cardCount: 7,
-                    tableCard: null
-                },
-                p1: {
-                    name:"abu",
-                    cardCount: 7
-                },
-                p2: {
-                    name:"aishwarya",
-                    cardCount: 7
-                },
-                p3: {
-                    name:"rp",
-                    cardCount: 8
-                },
-                me: 3,
-                myCards: [
-                    {
-                        number: '7',
-                        suit: 'spades'
-                    },
-                    {
-                        number: '9',
-                        suit: 'spades'
-                    },
-                    {
-                        number: '10',
-                        suit: 'spades'
-                    },
-                    {
-                        number: 'A',
-                        suit: 'spades'
-                    },
-                    {
-                        number: 'Q',
-                        suit: 'spades'
-                    },
-                    {
-                        number: 'K',
-                        suit: 'spades'
-                    },
-                    {
-                        number: 'J',
-                        suit: 'spades'
-                    },
-                    {
-                        number: '7',
-                        suit: 'spades'
-                    },
-                ]
-            }
+            loginError: null
         }
     },
     props: {
     },
     methods: {
+        getClassesByObject(payload) {
+            let c = {};
+            c['rank-' + payload.number.toLowerCase()] = true
+            c[payload.suit] = true
+            return c
+        },
         getClasses: function(number, suit) {
             let c = {};
             c['rank-' + number.toLowerCase()] = true
@@ -235,6 +187,7 @@ export default {
                 // you can also do this.messages.push(data)
             });
             this.socket.on('UPDATE_TABLE', (data) => {
+                console.log(data)
                 this.tableData = data;
                 // you can also do this.messages.push(data)
             });

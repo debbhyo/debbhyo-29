@@ -5,13 +5,11 @@ var session = require('express-session');
 var cors = require('cors')
 const app = express()
 const port = 3000
-var tables = {
-}
 app.use(cookieParser());
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
-})); 
+}));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
   origin: 'http://localhost:8080',
@@ -19,13 +17,48 @@ var corsOptions = {
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 app.use(cors(corsOptions))
-var identities = {
-}
+
+var identities = {}
 var table = {
     qwerty123:{
         playersCount:0
     }
 }
+var cardsArray = [
+    {number: "J", suit: "clubs"},
+    {number: "Q", suit: "diams"},
+    {number: "7", suit: "diams"},
+    {number: "9", suit: "hearts"},
+    {number: "A", suit: "hearts"},
+    {number: "10", suit: "diams"},
+    {number: "Q", suit: "spades"},
+    {number: "7", suit: "hearts"},
+    {number: "A", suit: "diams"},
+    {number: "10", suit: "spades"},
+    {number: "A", suit: "clubs"},
+    {number: "Q", suit: "clubs"},
+    {number: "K", suit: "hearts"},
+    {number: "8", suit: "clubs"},
+    {number: "K", suit: "diams"},
+    {number: "K", suit: "spades"},
+    {number: "A", suit: "spades"},
+    {number: "Q", suit: "hearts"},
+    {number: "J", suit: "diams"},
+    {number: "9", suit: "spades"},
+    {number: "J", suit: "hearts"},
+    {number: "7", suit: "clubs"},
+    {number: "8", suit: "diams"},
+    {number: "9", suit: "clubs"},
+    {number: "J", suit: "spades"},
+    {number: "9", suit: "diams"},
+    {number: "7", suit: "spades"},
+    {number: "10", suit: "clubs"},
+    {number: "K", suit: "clubs"},
+    {number: "10", suit: "hearts"},
+    {number: "8", suit: "hearts"},
+    {number: "8", suit: "spades"},
+]
+
 function generateIdentity() {
     let length = 20
     let result           = '';
@@ -37,6 +70,63 @@ function generateIdentity() {
     return result;
 }
 
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+function startGame(tablename) {
+    table[tablename]['deck'] = []
+    let deck = []
+    for (let i = 0;i < 32;i++) {
+        deck.push(i)
+    }
+    table[tablename]['deck'] = shuffle(deck)
+    table[tablename]['dealer'] = 0;
+    nextRound(tablename, "BIDDING_1")
+}
+
+function syncTable(tablename) {
+    for (let j = 0;j < 4; j++) {
+        let player = 'p' + j
+        if (table[tablename][player] && table[tablename][player]['identity'] && table[tablename][player]['identity']['socket']) {
+            let socket = table[tablename][player]['identity']['socket']
+            let data = JSON.parse(JSON.stringify(table[tablename]))
+            data['me'] = j
+            io.to(socket).emit('UPDATE_TABLE', data);
+        }
+    }
+}
+
+function nextRound(tablename, type) {
+    switch(type){
+        case "BIDDING_1":
+        for (let j = 0;j < 4; j++) {
+            let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
+            table[tablename][player]['cards'] = []
+            for (let k = 0;k < 4; k++) {
+                table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
+            }
+            table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
+        }
+        break
+    }
+    syncTable(tablename)
+}
 app.get('/get-identity', (req, res) => {
     if (req.session.identity && req.session.identity.length === 20) {
         if (identities[req.session.identity]) {
@@ -77,6 +167,9 @@ app.post('/login', (req, res) => {
                 identity: identities[req.session.identity]
             }
             table["qwerty123"].playersCount += 1
+            if (table["qwerty123"].playersCount === 4) {
+                startGame("qwerty123")
+            }
             res.json({
                 identity : req.session.identity,
                 loggedIn : true,
@@ -105,9 +198,8 @@ io.on('connection', function(socket) {
             io.emit('MESSAGE', data)
         });
         socket.on('UPDATE_ME', function(data) {
-            console.log('UPDATE_ME recieved')
-            socket.emit('UPDATE_TABLE', table.qwerty123)
+                syncTable("qwerty123")
         });
-        io.emit('UPDATE_TABLE', table.qwerty123)
+        syncTable("qwerty123")
     }
 });
