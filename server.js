@@ -132,11 +132,31 @@ function nextRound(tablename, type) {
             break
 
         case "SET_TRUMP":
-            let winner = table[tablename]['current'].winner
+            let bidWinner = table[tablename]['current'].winner
             table[tablename]['current'] = {
                 round: 'SET_TRUMP',
-                winner: winner
+                winner: bidWinner
             }
+            break
+
+        case "NEXT_ROUND":
+            table[tablename]['current']['game'] += 1
+            table[tablename]['current']['turn'] = 1
+            table[tablename]['current']['player'] = table[tablename]['current']['roundWinner']
+            table[tablename]['current']['starter'] = table[tablename]['current']['roundWinner']
+            table[tablename]['current']['options'] = table[tablename]['p'+(table[tablename]['current']['roundWinner'])]['cards']
+            break
+
+        case "NEXT_GAME":
+            table[tablename]['deck'] = []
+            let deck = []
+            for (let i = 0;i < 32;i++) {
+                deck.push(i)
+            }
+            table[tablename]['deck'] = shuffle(deck)
+            table[tablename]['dealer'] += 1;
+            nextRound(tablename, "BIDDING")
+            return
             break
 
         case "START_ROUND":
@@ -291,7 +311,6 @@ function turn(socket, data) {
                     } else if (table[tablename]['current']['turn'] === 4) {
                         table[tablename]['p' + player]['tableCard'] = data.card
                         table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
-                        
                         let winner = table[tablename]['current']['starter']
                         let starter = table[tablename]['current']['starter']
                         let iterator = table[tablename]['current']['starter']
@@ -331,6 +350,12 @@ function turn(socket, data) {
                             table[tablename]['p' + winner]['points'] += points
                         } else {
                             table[tablename]['p' + winner]['points'] = points
+                        }
+                        table[tablename]['current']['roundWinner'] = winner
+                        if (table[tablename].current.game === 8) {
+                            nextRound(tablename, "NEXT_GAME")
+                        } else {
+                            nextRound(tablename, "NEXT_ROUND")
                         }
                     } else {
                         table[tablename]['current']['turn'] += 1
