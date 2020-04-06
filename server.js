@@ -25,38 +25,38 @@ var table = {
     }
 }
 var cardsArray = [
-    {number: "J", suit: "clubs"},
-    {number: "Q", suit: "diams"},
-    {number: "7", suit: "diams"},
-    {number: "9", suit: "hearts"},
-    {number: "A", suit: "hearts"},
-    {number: "10", suit: "diams"},
-    {number: "Q", suit: "spades"},
-    {number: "7", suit: "hearts"},
-    {number: "A", suit: "diams"},
-    {number: "10", suit: "spades"},
-    {number: "A", suit: "clubs"},
-    {number: "Q", suit: "clubs"},
-    {number: "K", suit: "hearts"},
-    {number: "8", suit: "clubs"},
-    {number: "K", suit: "diams"},
-    {number: "K", suit: "spades"},
-    {number: "A", suit: "spades"},
-    {number: "Q", suit: "hearts"},
-    {number: "J", suit: "diams"},
-    {number: "9", suit: "spades"},
-    {number: "J", suit: "hearts"},
-    {number: "7", suit: "clubs"},
-    {number: "8", suit: "diams"},
-    {number: "9", suit: "clubs"},
-    {number: "J", suit: "spades"},
-    {number: "9", suit: "diams"},
-    {number: "7", suit: "spades"},
-    {number: "10", suit: "clubs"},
-    {number: "K", suit: "clubs"},
-    {number: "10", suit: "hearts"},
-    {number: "8", suit: "hearts"},
-    {number: "8", suit: "spades"},
+    {number: "J", suit: "clubs", sort:16},
+    {number: "Q", suit: "diams", sort:27},
+    {number: "7", suit: "diams", sort:25},
+    {number: "9", suit: "hearts", sort:23},
+    {number: "A", suit: "hearts", sort:22},
+    {number: "10", suit: "diams", sort:29},
+    {number: "Q", suit: "spades", sort:3},
+    {number: "7", suit: "hearts", sort:17},
+    {number: "A", suit: "diams", sort:30},
+    {number: "10", suit: "spades", sort:5},
+    {number: "A", suit: "clubs", sort:14},
+    {number: "Q", suit: "clubs", sort:11},
+    {number: "K", suit: "hearts", sort:20},
+    {number: "8", suit: "clubs", sort:10},
+    {number: "K", suit: "diams", sort:28},
+    {number: "K", suit: "spades", sort:4},
+    {number: "A", suit: "spades", sort:6},
+    {number: "Q", suit: "hearts", sort:19},
+    {number: "J", suit: "diams", sort:32},
+    {number: "9", suit: "spades", sort:7},
+    {number: "J", suit: "hearts", sort:24},
+    {number: "7", suit: "clubs", sort:9},
+    {number: "8", suit: "diams", sort:26},
+    {number: "9", suit: "clubs", sort:15},
+    {number: "J", suit: "spades", sort:8},
+    {number: "9", suit: "diams", sort:31},
+    {number: "7", suit: "spades", sort:1},
+    {number: "10", suit: "clubs", sort:13},
+    {number: "K", suit: "clubs", sort:12},
+    {number: "10", suit: "hearts", sort:21},
+    {number: "8", suit: "hearts", sort:18},
+    {number: "8", suit: "spades", sort:2},
 ]
 
 function generateIdentity() {
@@ -146,14 +146,17 @@ function nextRound(tablename, type) {
                 for (let k = 0;k < 4; k++) {
                     table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
                 }
+                table[tablename][player]['cards'].sort((a,b) => a.sort > b.sort ? 1 : -1)
                 table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
             }
             table[tablename]['current'] = {
                 round: 'GAME',
-                'set': 1,
                 trump: trump,
                 isTrumpRevealed: false,
-                player: table[tablename]['dealer']
+                turn: 1,
+                player: table[tablename]['dealer'],
+                dealer: table[tablename]['dealer'],
+                options: table[tablename]['p'+table[tablename]['dealer']]['cards']
             }
             break
     }
@@ -253,6 +256,34 @@ function turn(socket, data) {
                 return
             }
             break
+
+        case "GAME":
+            console.log("GAME recieved")
+            if (table[tablename].current && table[tablename].current['player'] === player) {
+                if (table[tablename]['current']['turn'] === 1) {
+                    console.log("Turn 1")
+                    table[tablename]['current'].turnSuit = data.card.suit
+                    table[tablename]['current']['turn'] += 1
+                    table[tablename]['p' + player]['tableCard'] = data.card
+                    table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                    let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
+                    if (!(options.length)) {
+                        options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
+                    }
+                    table[tablename]['current']['options'] = options
+                } else if (table[tablename]['current']['turn'] === 4) {
+                    // table[tablename]['current'].turnSuit = data.card.suit
+                } else {
+                    table[tablename]['current']['turn'] += 1
+                    table[tablename]['p' + player]['tableCard'] = data.card
+                    table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                    let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
+                    if (!(options.length)) {
+                        options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
+                    }
+                    table[tablename]['current']['options'] = options
+                }
+            }
     }
     syncTable("qwerty123")
 }
