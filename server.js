@@ -323,16 +323,16 @@ function turn(socket, data) {
                             if (table[tablename]['current'].isTrumpRevealed === true) {
                                 if (table[tablename]['current']['trump'] === "reverse") {
                                     if (table[tablename]['p' + starter]['tableCard']['isTrumpRevealed'] === true) {
-                                        if (player2.suit === player1.suit && player2.card.sort < player1.card.sort) {
+                                        if (player2.suit === player1.suit && player2.sort < player1.sort) {
                                             winner = ((iterator + i) % 4)
                                         }
                                     } else {
-                                        if (player2.suit === player1.suit && player2.card.sort > player1.card.sort) {
+                                        if (player2.suit === player1.suit && player2.sort > player1.sort) {
                                             winner = ((iterator + i) % 4)
                                         }
                                     }
                                 } else if(table[tablename]['current']['trump'] === "no-trump") {
-                                    if (player2.suit === player1.suit && player2.card.sort < player1.card.sort) {
+                                    if (player2.suit === player1.suit && player2.sort < player1.sort) {
                                         winner = ((iterator + i) % 4)
                                     }
                                 } else {
@@ -341,7 +341,7 @@ function turn(socket, data) {
                                     }
                                 }
                             } else {
-                                if (player2.suit === player1.suit && player2.card.sort > player1.card.sort) {
+                                if (player2.suit === player1.suit && player2.sort > player1.sort) {
                                     winner = ((iterator + i) % 4)
                                 }
                             }
