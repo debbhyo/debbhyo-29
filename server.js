@@ -364,6 +364,9 @@ function turn(socket, data) {
                         table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
                         let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
                         if (!(options.length)) {
+                            if (table[tablename]['current'].isTrumpRevealed === false) {
+                                table[tablename]['current'].canRevealTrump = true
+                            }
                             options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
                         }
                         table[tablename]['current']['options'] = options
