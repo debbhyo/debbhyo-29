@@ -215,7 +215,7 @@ function turn(socket, data) {
                                             table[tablename]['current'].defender = (player + i) % 4
                                             table[tablename]['current'].minBid = table[tablename]['p' + ((player + i) % 4)]['bid'] + 1
                                             if (table[tablename]['p' + ((player + i + 1) % 4)]['bidPass'] !== true) {
-                                                table[tablename]['current'].bidder = (player + i) % 4
+                                                table[tablename]['current'].bidder = (player + i + 1) % 4
                                                 break
                                             } else {
                                                 table[tablename]['current'].winner = player + i
