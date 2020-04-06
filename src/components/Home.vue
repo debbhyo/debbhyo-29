@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="row" style="height:5%">
-                        <div class="col-12" style="text-align: center; display:flex; align-items: center;justify-content: center;">
+                        <div class="col-12 quadrat" style="text-align: center; display:flex; align-items: center;justify-content: center;">
                             <template v-if="tableData.current && tableData.current.round === 'BIDDING' && tableData.current.bidder === tableData.me">
                                 <button @click.stop.prevent="turn({'pass':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">pass</button>
                                 <button @click.stop.prevent="turn({'bid':bid})" type="button" class="btn btn-secondary ml-1 mr-1" v-for="bid in 29" v-if="bid >= tableData.current.minBid">{{bid}}</button>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                     <div class="row board-bottom-row">
-                        <div class="col-12 pt-2" style="text-align: center; display:flex; align-items: center;justify-content: center;" v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me">
+                        <div class="col-12 pt-2 quadrat" style="text-align: center; display:flex; align-items: center;justify-content: center;" v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me">
                             <template v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']">
                                 <a class="cardd" :class="getClasses(card.number,card.suit)" v-if="containsObject(card, tableData.current.options)" @click.stop.prevent="turn({card:card,isTrumpRevealed:tableData.current.isTrumpRevealed})">
                                     <span class="rank">{{card.number}}</span>
@@ -298,5 +298,22 @@ export default {
     margin-right: auto !important;*/
 }
 .palyer-1 ul li{
+}
+.quadrat {
+  -webkit-animation: blinking-background 2s infinite;  /* Safari 4+ */
+  -moz-animation: blinking-background 2s infinite;  /* Fx 5+ */
+  -o-animation: blinking-background 2s infinite;  /* Opera 12+ */
+  animation: blinking-background 2s infinite;  /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes blinking-background {
+  0%, 49% {
+    background-color: #dadada;
+    /*border: 3px solid #e50000;*/
+  }
+  50%, 100% {
+    background-color: white;
+    /*border: 3px solid rgb(117, 209, 63);*/
+  }
 }
 </style>
