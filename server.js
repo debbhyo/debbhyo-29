@@ -298,7 +298,7 @@ function turn(socket, data) {
                         table[tablename]['current'].turnSuit = data.card.suit
                         table[tablename]['current']['turn'] += 1
                         table[tablename]['p' + player]['tableCard'] = data.card
-                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.card.suit || item.number !== data.card.number)
                         table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
                         let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
                         if (!(options.length)) {
@@ -310,7 +310,7 @@ function turn(socket, data) {
                         table[tablename]['current']['options'] = options
                     } else if (table[tablename]['current']['turn'] === 4) {
                         table[tablename]['p' + player]['tableCard'] = data.card
-                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.card.suit || item.number !== data.card.number)
                         let winner = table[tablename]['current']['starter']
                         let starter = table[tablename]['current']['starter']
                         let iterator = table[tablename]['current']['starter']
@@ -360,7 +360,7 @@ function turn(socket, data) {
                     } else {
                         table[tablename]['current']['turn'] += 1
                         table[tablename]['p' + player]['tableCard'] = data.card
-                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.card.suit || item.number !== data.card.number)
                         table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
                         let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
                         if (!(options.length)) {
