@@ -25,38 +25,38 @@ var table = {
     }
 }
 var cardsArray = [
-    {number: "J", suit: "clubs", sort:16},
-    {number: "Q", suit: "diams", sort:27},
-    {number: "7", suit: "diams", sort:25},
-    {number: "9", suit: "hearts", sort:23},
-    {number: "A", suit: "hearts", sort:22},
-    {number: "10", suit: "diams", sort:29},
-    {number: "Q", suit: "spades", sort:3},
-    {number: "7", suit: "hearts", sort:17},
-    {number: "A", suit: "diams", sort:30},
-    {number: "10", suit: "spades", sort:5},
-    {number: "A", suit: "clubs", sort:14},
-    {number: "Q", suit: "clubs", sort:11},
-    {number: "K", suit: "hearts", sort:20},
-    {number: "8", suit: "clubs", sort:10},
-    {number: "K", suit: "diams", sort:28},
-    {number: "K", suit: "spades", sort:4},
-    {number: "A", suit: "spades", sort:6},
-    {number: "Q", suit: "hearts", sort:19},
-    {number: "J", suit: "diams", sort:32},
-    {number: "9", suit: "spades", sort:7},
-    {number: "J", suit: "hearts", sort:24},
-    {number: "7", suit: "clubs", sort:9},
-    {number: "8", suit: "diams", sort:26},
-    {number: "9", suit: "clubs", sort:15},
-    {number: "J", suit: "spades", sort:8},
-    {number: "9", suit: "diams", sort:31},
-    {number: "7", suit: "spades", sort:1},
-    {number: "10", suit: "clubs", sort:13},
-    {number: "K", suit: "clubs", sort:12},
-    {number: "10", suit: "hearts", sort:21},
-    {number: "8", suit: "hearts", sort:18},
-    {number: "8", suit: "spades", sort:2},
+    {number: "J", suit: "clubs", sort:16, points:3},
+    {number: "Q", suit: "diams", sort:27, points:0},
+    {number: "7", suit: "diams", sort:25, points:0},
+    {number: "9", suit: "hearts", sort:23, points:2},
+    {number: "A", suit: "hearts", sort:22, points:1},
+    {number: "10", suit: "diams", sort:29, points:1},
+    {number: "Q", suit: "spades", sort:3, points:0},
+    {number: "7", suit: "hearts", sort:17, points:0},
+    {number: "A", suit: "diams", sort:30, points:1},
+    {number: "10", suit: "spades", sort:5, points:1},
+    {number: "A", suit: "clubs", sort:14, points:1},
+    {number: "Q", suit: "clubs", sort:11, points:0},
+    {number: "K", suit: "hearts", sort:20, points:0},
+    {number: "8", suit: "clubs", sort:10, points:0},
+    {number: "K", suit: "diams", sort:28, points:0},
+    {number: "K", suit: "spades", sort:4, points:0},
+    {number: "A", suit: "spades", sort:6, points:1},
+    {number: "Q", suit: "hearts", sort:19, points:0},
+    {number: "J", suit: "diams", sort:32, points:3},
+    {number: "9", suit: "spades", sort:7, points:2},
+    {number: "J", suit: "hearts", sort:24, points:3},
+    {number: "7", suit: "clubs", sort:9, points:0},
+    {number: "8", suit: "diams", sort:26, points:0},
+    {number: "9", suit: "clubs", sort:15, points:2},
+    {number: "J", suit: "spades", sort:8, points:3},
+    {number: "9", suit: "diams", sort:31, points:2},
+    {number: "7", suit: "spades", sort:1, points:0},
+    {number: "10", suit: "clubs", sort:13, points:1},
+    {number: "K", suit: "clubs", sort:12, points:0},
+    {number: "10", suit: "hearts", sort:21, points:1},
+    {number: "8", suit: "hearts", sort:18, points:0},
+    {number: "8", suit: "spades", sort:2, points:0},
 ]
 
 function generateIdentity() {
@@ -141,6 +141,7 @@ function nextRound(tablename, type) {
 
         case "START_ROUND":
             let trump = table[tablename]['current'].trump
+            let winner = table[tablename]['current'].winner
             for (let j = 0;j < 4; j++) {
                 let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
                 for (let k = 0;k < 4; k++) {
@@ -151,12 +152,15 @@ function nextRound(tablename, type) {
             }
             table[tablename]['current'] = {
                 round: 'GAME',
+                game:1,
                 trump: trump,
                 isTrumpRevealed: false,
+                canRevealTrump: false,
                 turn: 1,
-                player: table[tablename]['dealer'],
+                player: winner,
+                starter: winner,
                 dealer: table[tablename]['dealer'],
-                options: table[tablename]['p'+table[tablename]['dealer']]['cards']
+                options: table[tablename]['p'+winner]['cards']
             }
             break
     }
@@ -260,28 +264,85 @@ function turn(socket, data) {
         case "GAME":
             console.log("GAME recieved")
             if (table[tablename].current && table[tablename].current['player'] === player) {
-                if (table[tablename]['current']['turn'] === 1) {
-                    console.log("Turn 1")
-                    table[tablename]['current'].turnSuit = data.card.suit
-                    table[tablename]['current']['turn'] += 1
-                    table[tablename]['p' + player]['tableCard'] = data.card
-                    table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
-                    let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
-                    if (!(options.length)) {
+                if (data.isTrumpRevealed === true && table[tablename].current.canRevealTrump === true) {
+                    table[tablename].current.isTrumpRevealed = true
+                    table[tablename].current.canRevealTrump = false
+                    let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename].current.trump)
+                    if (!options.length) {
                         options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
                     }
-                    table[tablename]['current']['options'] = options
-                } else if (table[tablename]['current']['turn'] === 4) {
-                    // table[tablename]['current'].turnSuit = data.card.suit
+                    table[tablename].current.options = options
                 } else {
-                    table[tablename]['current']['turn'] += 1
-                    table[tablename]['p' + player]['tableCard'] = data.card
-                    table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
-                    let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
-                    if (!(options.length)) {
-                        options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
+                    if (table[tablename]['current']['turn'] === 1) {
+                        console.log("Turn 1")
+                        table[tablename]['current'].turnSuit = data.card.suit
+                        table[tablename]['current']['turn'] += 1
+                        table[tablename]['p' + player]['tableCard'] = data.card
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                        let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
+                        if (!(options.length)) {
+                            if (table[tablename]['current'].isTrumpRevealed === false) {
+                                table[tablename]['current'].canRevealTrump = true
+                            }
+                            options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
+                        }
+                        table[tablename]['current']['options'] = options
+                    } else if (table[tablename]['current']['turn'] === 4) {
+                        table[tablename]['p' + player]['tableCard'] = data.card
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        
+                        let winner = table[tablename]['current']['starter']
+                        let starter = table[tablename]['current']['starter']
+                        let iterator = table[tablename]['current']['starter']
+                        let points = 0;
+                        points += table[tablename]['p' + winner]['tableCard']['points']
+                        for (let i=1; i<=3; i++) {
+                            let player1 = table[tablename]['p' + winner]['tableCard']
+                            let player2 = table[tablename]['p' + ((iterator + i) % 4)]['tableCard']
+                            points += table[tablename]['p' + ((iterator + i) % 4)]['tableCard']['points']
+                            if (table[tablename]['current'].isTrumpRevealed === true) {
+                                if (table[tablename]['current']['trump'] === "reverse") {
+                                    if (table[tablename]['p' + starter]['tableCard']['isTrumpRevealed'] === true) {
+                                        if (player2.suit === player1.suit && player2.card.sort < player1.card.sort) {
+                                            winner = ((iterator + i) % 4)
+                                        }
+                                    } else {
+                                        if (player2.suit === player1.suit && player2.card.sort > player1.card.sort) {
+                                            winner = ((iterator + i) % 4)
+                                        }
+                                    }
+                                } else if(table[tablename]['current']['trump'] === "no-trump") {
+                                    if (player2.suit === player1.suit && player2.card.sort < player1.card.sort) {
+                                        winner = ((iterator + i) % 4)
+                                    }
+                                } else {
+                                    if (player2.suit !== player1.suit && player2.suit === table[tablename]['current']['trump']) {
+                                        winner = ((iterator + i) % 4)
+                                    }
+                                }
+                            } else {
+                                if (player2.suit === player1.suit && player2.card.sort > player1.card.sort) {
+                                    winner = ((iterator + i) % 4)
+                                }
+                            }
+                        }
+                        if (table[tablename]['p' + winner]['points']) {
+                            table[tablename]['p' + winner]['points'] += points
+                        } else {
+                            table[tablename]['p' + winner]['points'] = points
+                        }
+                    } else {
+                        table[tablename]['current']['turn'] += 1
+                        table[tablename]['p' + player]['tableCard'] = data.card
+                        table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.suit || item.number !== data.number)
+                        table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                        let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
+                        if (!(options.length)) {
+                            options = table[tablename]['p' + table[tablename]['current']['player']]['cards']
+                        }
+                        table[tablename]['current']['options'] = options
                     }
-                    table[tablename]['current']['options'] = options
                 }
             }
     }

@@ -85,12 +85,15 @@
                                 <button @click.stop.prevent="turn({'trump':'reverse'})" type="button" class="btn btn-secondary ml-1 mr-1">REVERSE</button>
                                 <button @click.stop.prevent="turn({'trump':'no-trump'})" type="button" class="btn btn-secondary ml-1 mr-1">NO TRUMP</button>
                             </template>
+                            <template v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.bidder === tableData.me && tableData.current.canRevealTrump === true && tableData.current.isTrumpRevealed === false">
+                                <button @click.stop.prevent="turn({'isTrumpRevealed':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">Show Trump</button>
+                            </template>
                         </div>
                     </div>
                     <div class="row board-bottom-row">
                         <div class="col-12 pt-2" style="text-align: center; display:flex; align-items: center;justify-content: center;" v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me">
                             <template v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']">
-                                <a class="cardd" :class="getClasses(card.number,card.suit)" v-if="containsObject(card, tableData.current.options)" @click.stop.prevent="turn({card:card})">
+                                <a class="cardd" :class="getClasses(card.number,card.suit)" v-if="containsObject(card, tableData.current.options)" @click.stop.prevent="turn({card:card,isTrumpRevealed:tableData.current.isTrumpRevealed})">
                                     <span class="rank">{{card.number}}</span>
                                     <span class="suit" v-html="'&' + card.suit + ';'"></span>
                                 </a>
