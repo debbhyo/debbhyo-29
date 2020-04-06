@@ -97,7 +97,7 @@ function startGame(tablename) {
     }
     table[tablename]['deck'] = shuffle(deck)
     table[tablename]['dealer'] = 0;
-    nextRound(tablename, "BIDDING_1")
+    nextRound(tablename, "BIDDING")
 }
 
 function syncTable(tablename) {
@@ -114,7 +114,7 @@ function syncTable(tablename) {
 
 function nextRound(tablename, type) {
     switch(type){
-        case "BIDDING_1":
+        case "BIDDING":
             for (let j = 0;j < 4; j++) {
                 let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
                 table[tablename][player]['cards'] = []
@@ -124,10 +124,36 @@ function nextRound(tablename, type) {
                 table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
             }
             table[tablename]['current'] = {
-                round: 'BIDDING_1',
+                round: 'BIDDING',
                 bidder: table[tablename]['dealer'],
                 minBid: 17,
                 defender: null
+            }
+            break
+
+        case "SET_TRUMP":
+            let winner = table[tablename]['current'].winner
+            table[tablename]['current'] = {
+                round: 'SET_TRUMP',
+                winner: winner
+            }
+            break
+
+        case "START_ROUND":
+            let trump = table[tablename]['current'].trump
+            for (let j = 0;j < 4; j++) {
+                let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
+                for (let k = 0;k < 4; k++) {
+                    table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
+                }
+                table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
+            }
+            table[tablename]['current'] = {
+                round: 'GAME',
+                'set': 1,
+                trump: trump,
+                isTrumpRevealed: false,
+                player: table[tablename]['dealer']
             }
             break
     }
@@ -149,63 +175,84 @@ function turn(socket, data) {
     let player = findPlayerFromSocket(socket)
     console.log("socket player:" + player)
     let tablename = "qwerty123"
-    if (table[tablename].current && table[tablename].current['bidder'] === player) {
-        switch(table[tablename].current.round) {
-            case "BIDDING_1":
-                    if (data.pass === true) {
-                        table[tablename]['p' + player]['bidPass'] = true
-                        if (table[tablename].current.defender === player) {
-                            for (let i = 1; i <= 4; i++) {
-                                if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
-                                    table[tablename]['current'].defender = (player + i) % 4
-                                    table[tablename]['current'].minBid = table[tablename]['p' + ((player + i) % 4)]['bid'] + 1
-                                    if (table[tablename]['p' + ((player + i + 1) % 4)]['bidPass'] !== true) {
-                                        table[tablename]['current'].bidder = (player + i) % 4
-                                    } else {
-                                        // start game
+    switch(table[tablename].current.round){
+        case "BIDDING":
+            if (table[tablename].current && table[tablename].current['bidder'] === player) {
+                switch(table[tablename].current.round) {
+                    case "BIDDING":
+                            if (data.pass === true) {
+                                table[tablename]['p' + player]['bidPass'] = true
+                                if (table[tablename].current.defender === player) {
+                                    for (let i = 1; i <= 4; i++) {
+                                        if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                            table[tablename]['current'].defender = (player + i) % 4
+                                            table[tablename]['current'].minBid = table[tablename]['p' + ((player + i) % 4)]['bid'] + 1
+                                            if (table[tablename]['p' + ((player + i + 1) % 4)]['bidPass'] !== true) {
+                                                table[tablename]['current'].bidder = (player + i) % 4
+                                                break
+                                            } else {
+                                                table[tablename]['current'].winner = player + i
+                                                nextRound(tablename,"SET_TRUMP")
+                                                return
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        } else {
-                            for (let i = 1; i <= 4; i++) {
-                                if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
-                                    if (((player + i) % 4) === table[tablename].current.defender) {
-                                        //start game
-                                    } else {
-                                        table[tablename]['current'].bidder = (player + i) % 4
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        table[tablename]['p' + player]['bid'] = data.bid
-                        if ((table[tablename].current.defender) === null) {
-                            console.log("defender is null")
-                            table[tablename]['current'].minBid = data.bid + 1
-                            table[tablename]['current'].bidder = (player + 1) % 4
-                            table[tablename]['current'].defender = player
-                        } else {
-                            if (table[tablename].current.defender === player) {
-                                console.log("defender is player")
-                                table[tablename]['current'].minBid = data.bid + 1
-                                for (let i = 1; i <= 4; i++) {
-                                    if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
-                                        if (((player + i) % 4) === table[tablename].current.defender) {
-                                            //start game
-                                        } else {
-                                            table[tablename]['current'].bidder = (player + i) % 4
+                                } else {
+                                    for (let i = 1; i <= 4; i++) {
+                                        if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                            if (((player + i) % 4) === table[tablename].current.defender) {
+                                                table[tablename]['current'].winner = table[tablename].current.defender
+                                                nextRound(tablename,"SET_TRUMP")
+                                                return
+                                            } else {
+                                                table[tablename]['current'].bidder = (player + i) % 4
+                                                break
+                                            }
                                         }
                                     }
                                 }
                             } else {
-                                console.log("player bidded against defender")
-                                table[tablename]['current'].minBid = data.bid
-                                table[tablename]['current'].bidder = table[tablename]['current'].defender
+                                table[tablename]['p' + player]['bid'] = data.bid
+                                if ((table[tablename].current.defender) === null) {
+                                    console.log("defender is null")
+                                    table[tablename]['current'].minBid = data.bid + 1
+                                    table[tablename]['current'].bidder = (player + 1) % 4
+                                    table[tablename]['current'].defender = player
+                                    break
+                                } else {
+                                    if (table[tablename].current.defender === player) {
+                                        console.log("defender is player")
+                                        table[tablename]['current'].minBid = data.bid + 1
+                                        for (let i = 1; i <= 4; i++) {
+                                            if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                                if (((player + i) % 4) === table[tablename].current.defender) {
+                                                    //start game
+                                                } else {
+                                                    table[tablename]['current'].bidder = (player + i) % 4
+                                                    break
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        console.log("player bidded against defender")
+                                        table[tablename]['current'].minBid = data.bid
+                                        table[tablename]['current'].bidder = table[tablename]['current'].defender
+                                        break
+                                    }
+                                }
                             }
-                        }
-                    }
-                break
-        }
+                        break
+                }
+            }
+            break
+
+        case "SET_TRUMP":
+            if (table[tablename].current && table[tablename].current['winner'] === player) {
+                table[tablename].current.trump = data.trump
+                nextRound("qwerty123","START_ROUND")
+                return
+            }
+            break
     }
     syncTable("qwerty123")
 }

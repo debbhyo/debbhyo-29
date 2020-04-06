@@ -73,9 +73,17 @@
                     </div>
                     <div class="row" style="height:5%">
                         <div class="col-12" style="text-align: center; display:flex; align-items: center;justify-content: center;">
-                            <template v-if="tableData.current && tableData.current.round === 'BIDDING_1' && tableData.current.bidder === tableData.me">
+                            <template v-if="tableData.current && tableData.current.round === 'BIDDING' && tableData.current.bidder === tableData.me">
                                 <button @click.stop.prevent="turn({'pass':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">pass</button>
                                 <button @click.stop.prevent="turn({'bid':bid})" type="button" class="btn btn-secondary ml-1 mr-1" v-for="bid in 29" v-if="bid >= tableData.current.minBid">{{bid}}</button>
+                            </template>
+                            <template v-if="tableData.current && tableData.current.round === 'SET_TRUMP' && tableData.current.winner === tableData.me">
+                                 <button @click.stop.prevent="turn({'trump':'spades'})" type="button" class="btn btn-dark ml-1 mr-1">SPADES</button>
+                                <button @click.stop.prevent="turn({'trump':'clubs'})" type="button" class="btn btn-success ml-1 mr-1">CLUBS</button>
+                                <button @click.stop.prevent="turn({'trump':'diams'})" type="button" class="btn btn-primary ml-1 mr-1">DIAMONDS</button>
+                                <button @click.stop.prevent="turn({'trump':'hearts'})" type="button" class="btn btn-danger ml-1 mr-1">HEARTS</button>
+                                <button @click.stop.prevent="turn({'trump':'reverse'})" type="button" class="btn btn-secondary ml-1 mr-1">REVERSE</button>
+                                <button @click.stop.prevent="turn({'trump':'no-trump'})" type="button" class="btn btn-secondary ml-1 mr-1">NO TRUMP</button>
                             </template>
                         </div>
                     </div>
