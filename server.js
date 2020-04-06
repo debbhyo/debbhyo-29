@@ -140,6 +140,9 @@ function nextRound(tablename, type) {
             break
 
         case "NEXT_ROUND":
+            for(let r = 0; r < 4;r++) {
+                table[tablename]['p' + r]['tableCard'] = null
+            }
             table[tablename]['current']['game'] += 1
             table[tablename]['current']['turn'] = 1
             table[tablename]['current']['player'] = table[tablename]['current']['roundWinner']
@@ -152,6 +155,10 @@ function nextRound(tablename, type) {
             let deck = []
             for (let i = 0;i < 32;i++) {
                 deck.push(i)
+            }
+            for (let i = 0;i < 4;i++) {
+                table[tablename]['p' + i]['tableCard'] = null
+                table[tablename]['p' + i]['bidPass'] = false
             }
             table[tablename]['deck'] = shuffle(deck)
             table[tablename]['dealer'] += 1;
