@@ -115,17 +115,99 @@ function syncTable(tablename) {
 function nextRound(tablename, type) {
     switch(type){
         case "BIDDING_1":
-        for (let j = 0;j < 4; j++) {
-            let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
-            table[tablename][player]['cards'] = []
-            for (let k = 0;k < 4; k++) {
-                table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
+            for (let j = 0;j < 4; j++) {
+                let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
+                table[tablename][player]['cards'] = []
+                for (let k = 0;k < 4; k++) {
+                    table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
+                }
+                table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
             }
-            table[tablename][player]['cardCount'] = table[tablename][player]['cards'].length
-        }
-        break
+            table[tablename]['current'] = {
+                round: 'BIDDING_1',
+                bidder: table[tablename]['dealer'],
+                minBid: 17,
+                defender: null
+            }
+            break
     }
     syncTable(tablename)
+}
+
+function findPlayerFromSocket(socket) {
+    let tablename = "qwerty123"
+    for (let j = 0;j < 4; j++) {
+        let player = 'p' + j
+        if (table[tablename][player] && table[tablename][player]['identity'] && table[tablename][player]['identity']['socket'] === socket) {
+            return j
+        }
+    }
+    return null
+}
+
+function turn(socket, data) {
+    let player = findPlayerFromSocket(socket)
+    console.log("socket player:" + player)
+    let tablename = "qwerty123"
+    if (table[tablename].current && table[tablename].current['bidder'] === player) {
+        switch(table[tablename].current.round) {
+            case "BIDDING_1":
+                    if (data.pass === true) {
+                        table[tablename]['p' + player]['bidPass'] = true
+                        if (table[tablename].current.defender === player) {
+                            for (let i = 1; i <= 4; i++) {
+                                if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                    table[tablename]['current'].defender = (player + i) % 4
+                                    table[tablename]['current'].minBid = table[tablename]['p' + ((player + i) % 4)]['bid'] + 1
+                                    if (table[tablename]['p' + ((player + i + 1) % 4)]['bidPass'] !== true) {
+                                        table[tablename]['current'].bidder = (player + i) % 4
+                                    } else {
+                                        // start game
+                                    }
+                                }
+                            }
+                        } else {
+                            for (let i = 1; i <= 4; i++) {
+                                if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                    if (((player + i) % 4) === table[tablename].current.defender) {
+                                        //start game
+                                    } else {
+                                        table[tablename]['current'].bidder = (player + i) % 4
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        table[tablename]['p' + player]['bid'] = data.bid
+                        if ((table[tablename].current.defender) === null) {
+                            console.log("defender is null")
+                            table[tablename]['current'].minBid = data.bid + 1
+                            table[tablename]['current'].bidder = (player + 1) % 4
+                            table[tablename]['current'].defender = player
+                        } else {
+                            if (table[tablename].current.defender === player) {
+                                console.log("defender is player")
+                                table[tablename]['current'].minBid = data.bid + 1
+                                for (let i = 1; i <= 4; i++) {
+                                    if (table[tablename]['p' + ((player + i) % 4)]['bidPass'] !== true){
+                                        if (((player + i) % 4) === table[tablename].current.defender) {
+                                            //start game
+                                        } else {
+                                            table[tablename]['current'].bidder = (player + i) % 4
+                                        }
+                                    }
+                                }
+                            } else {
+                                console.log("player bidded against defender")
+                                table[tablename]['current'].minBid = data.bid
+                                table[tablename]['current'].bidder = table[tablename]['current'].defender
+                            }
+                        }
+                    }
+                break
+        }
+    }
+    syncTable("qwerty123")
 }
 app.get('/get-identity', (req, res) => {
     if (req.session.identity && req.session.identity.length === 20) {
@@ -200,6 +282,9 @@ io.on('connection', function(socket) {
         socket.on('UPDATE_ME', function(data) {
                 syncTable("qwerty123")
         });
+        socket.on('TURN', (data) => {
+            turn(socket.id, data)
+        })
         syncTable("qwerty123")
     }
 });

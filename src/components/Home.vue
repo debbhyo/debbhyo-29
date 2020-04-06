@@ -71,8 +71,16 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row" style="height:5%">
+                        <div class="col-12" style="text-align: center; display:flex; align-items: center;justify-content: center;">
+                            <template v-if="tableData.current && tableData.current.round === 'BIDDING_1' && tableData.current.bidder === tableData.me">
+                                <button @click.stop.prevent="turn({'pass':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">pass</button>
+                                <button @click.stop.prevent="turn({'bid':bid})" type="button" class="btn btn-secondary ml-1 mr-1" v-for="bid in 29" v-if="bid >= tableData.current.minBid">{{bid}}</button>
+                            </template>
+                        </div>
+                    </div>
                     <div class="row board-bottom-row">
-                        <div class="col-12 pt-5" style="text-align: center; display:flex; align-items: center;justify-content: center;">
+                        <div class="col-12 pt-2" style="text-align: center; display:flex; align-items: center;justify-content: center;">
 
                             <a class="cardd" :class="getClasses(card.number,card.suit)" v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']" :key="index">
                                 <span class="rank">{{card.number}}</span>
@@ -193,6 +201,9 @@ export default {
             });
             this.socket.open();
         },
+        turn(data) {
+            this.socket.emit('TURN', data)
+        },
         login(e) {
             e.preventDefault();
             if (this.username && this.username.length > 0 && this.table && this.table.length > 0) {
@@ -239,7 +250,7 @@ export default {
     /*background-color: blue*/
 }
 .board-bottom-row {
-    height:30%;
+    height:25%;
     /*background-color: red*/
 }
 .board-right {
