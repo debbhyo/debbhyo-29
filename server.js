@@ -307,6 +307,7 @@ function turn(socket, data) {
                         table[tablename]['p' + player]['tableCard'] = data.card
                         table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.card.suit || item.number !== data.card.number)
                         table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                        table[tablename]['current'].canRevealTrump = false
                         let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
                         if (!(options.length)) {
                             if (table[tablename]['current'].isTrumpRevealed === false) {
@@ -359,6 +360,7 @@ function turn(socket, data) {
                             table[tablename]['p' + winner]['points'] = points
                         }
                         table[tablename]['current']['roundWinner'] = winner
+                        table[tablename]['current'].canRevealTrump = false
                         if (table[tablename].current.game === 8) {
                             nextRound(tablename, "NEXT_GAME")
                         } else {
@@ -369,6 +371,7 @@ function turn(socket, data) {
                         table[tablename]['p' + player]['tableCard'] = data.card
                         table[tablename]['p' + player]['cards'] = table[tablename]['p' + player]['cards'].filter(item => item.suit !== data.card.suit || item.number !== data.card.number)
                         table[tablename]['current']['player'] = (table[tablename]['current']['player'] + 1) % 4
+                        table[tablename]['current'].canRevealTrump = false
                         let options = table[tablename]['p' + table[tablename]['current']['player']]['cards'].filter(item => item.suit === table[tablename]['current'].turnSuit)
                         if (!(options.length)) {
                             if (table[tablename]['current'].isTrumpRevealed === false) {
