@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="row" style="height:5%">
-                        <div class="col-12 quadrat" style="text-align: center; display:flex; align-items: center;justify-content: center;">
+                        <div class="col-12" style="text-align: center; display:flex; align-items: center;justify-content: center;">
                             <template v-if="tableData.current && tableData.current.round === 'BIDDING' && tableData.current.bidder === tableData.me">
                                 <button @click.stop.prevent="turn({'pass':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">pass</button>
                                 <button @click.stop.prevent="turn({'bid':bid})" type="button" class="btn btn-secondary ml-1 mr-1" v-for="bid in 29" v-if="bid >= tableData.current.minBid">{{bid}}</button>
@@ -85,7 +85,7 @@
                                 <button @click.stop.prevent="turn({'trump':'reverse'})" type="button" class="btn btn-secondary ml-1 mr-1">REVERSE</button>
                                 <button @click.stop.prevent="turn({'trump':'no-trump'})" type="button" class="btn btn-secondary ml-1 mr-1">NO TRUMP</button>
                             </template>
-                            <template v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.bidder === tableData.me && tableData.current.canRevealTrump === true && tableData.current.isTrumpRevealed === false">
+                            <template v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me && tableData.current.canRevealTrump === true && tableData.current.isTrumpRevealed === false">
                                 <button @click.stop.prevent="turn({'isTrumpRevealed':true})" type="button" class="btn btn-dark ml-1 mr-1" v-if="tableData.current.defender !== null">Show Trump</button>
                             </template>
                         </div>
