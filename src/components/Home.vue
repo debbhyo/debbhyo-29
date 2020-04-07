@@ -19,6 +19,8 @@
                         </div>
                         <div class="col-3" style="text-align: left">
                             <h5 class="mt-2">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
+                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.starter]['identity']['username']}}</h5>
+                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.starter]['bid']}}</h5>
                         </div>
                     </div>
                     <div class="row board-middle-row">
@@ -145,7 +147,7 @@
                     </div>
                 </template>
                 <template v-else>
-                    <div class="card-body" style="height:75%;overflow-y: scroll;">
+                    <div class="card-body" id="chatbox" style="height:500px;overflow-y: scroll;">
                         <div class="card-title">
                             <h3>Chat</h3>
                             <hr>
@@ -214,16 +216,20 @@ export default {
             this.message = ''
         },
         initiateSocketConnection() {
-            this.socket = io('localhost:3000', {query : "identity=" + this.identity,autoConnect: false})
+            this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })
             this.socket.on('MESSAGE', (data) => {
                 this.messages = [...this.messages, data];
+                this.$nextTick(() => {
+                    var container = this.$el.querySelector("#chatbox");
+                    container.scrollTop = container.scrollHeight;
+                })
                 // you can also do this.messages.push(data)
             });
             this.socket.on('UPDATE_TABLE', (data) => {
-                console.log(data)
+                // console.log(data)
                 this.tableData = data;
                 // you can also do this.messages.push(data)
             });

@@ -4,7 +4,7 @@ var bodyParser = require('body-parser')
 var session = require('express-session');
 var cors = require('cors')
 const app = express()
-const port = 3000
+const port = 3009
 app.use(cookieParser());
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
-  origin: 'http://localhost:8080',
+  origin: 'http://29.debbhyo.xyz',
   credentials:true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
@@ -159,6 +159,8 @@ function nextRound(tablename, type) {
             for (let i = 0;i < 4;i++) {
                 table[tablename]['p' + i]['tableCard'] = null
                 table[tablename]['p' + i]['bidPass'] = false
+                table[tablename]['p' + r]['points'] = 0
+                table[tablename]['p' + r]['bid'] = 0
             }
             table[tablename]['deck'] = shuffle(deck)
             table[tablename]['dealer'] += 1;
