@@ -4,15 +4,21 @@
             <template v-if="tableData">
                 <div class="col-9 board-left" v-if="tableData.playersCount === 4">
                     <div class="row board-row-top" style="text-align: center;">
-                        <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4></div>
-                        <div class="col-12 palyer-1" style="transform: rotate(180deg); text-align: center;">
-                            <div style="width: 235px;">
-                                <ul class="hand">
-                                    <li v-for="n in this.tableData['p' + ((this.tableData.me + 2) % 4)]['cardCount']">
-                                        <div class="cardd back">*</div>
-                                    </li>
-                                </ul>
+                        <div class="col-3"></div>
+                            <div class="col-6">
+                            <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4></div>
+                            <div class="col-12 palyer-1" style="transform: rotate(180deg); text-align: center;">
+                                <div style="width: 235px;">
+                                    <ul class="hand">
+                                        <li v-for="n in this.tableData['p' + ((this.tableData.me + 2) % 4)]['cardCount']">
+                                            <div class="cardd back">*</div>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
+                        </div>
+                        <div class="col-3" style="text-align: left">
+                            <h5 class="mt-2">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
                         </div>
                     </div>
                     <div class="row board-middle-row">
