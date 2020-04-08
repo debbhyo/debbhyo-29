@@ -370,9 +370,9 @@ function turn(socket, data) {
                             }
                         }
                         if (table[tablename]['p' + winner]['points']) {
-                            table[tablename]['p' + winner]['points'] += 1
+                            table[tablename]['p' + winner]['points'] += points
                         } else {
-                            table[tablename]['p' + winner]['points'] = 1
+                            table[tablename]['p' + winner]['points'] = points
                         }
                         if (table[tablename]['p' + winner]['hands']) {
                             table[tablename]['p' + winner]['hands'] += 1
@@ -381,10 +381,15 @@ function turn(socket, data) {
                         }
                         table[tablename]['current']['roundWinner'] = winner
                         table[tablename]['current'].canRevealTrump = false
+
                         if (table[tablename].current.game === 8) {
-                            nextRound(tablename, "NEXT_GAME")
+                            setImmediate((arg) => {
+                              nextRound(tablename, "NEXT_GAME")
+                            }, 2000);
                         } else {
-                            nextRound(tablename, "NEXT_ROUND")
+                            setImmediate((arg) => {
+                              nextRound(tablename, "NEXT_ROUND")
+                            }, 2000);
                         }
                     } else {
                         table[tablename]['current']['turn'] += 1
