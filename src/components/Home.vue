@@ -228,8 +228,8 @@ export default {
     methods: {
         onEnterKey(e) {
             let input='';
-            if(e.srcElement.children[0].alt) {
-                input = e.srcElement.innerText + ' ' + e.srcElement.children[0].alt;
+            if(e.srcElement.children.length()>=1 && 'alt' in e.srcElement.children[0]) {
+                input = e.srcElement.innerText + e.srcElement.children[0].alt;
             }
             else {
                 input = e.srcElement.innerText;
