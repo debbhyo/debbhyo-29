@@ -342,10 +342,13 @@ function turn(socket, data) {
                                         }
                                     }
                                 } else if(table[tablename]['current']['trump'] === "no-trump") {
-                                    if (player2.suit === player1.suit && player2.sort < player1.sort) {
+                                    if (player2.suit === player1.suit && player2.sort > player1.sort) {
                                         winner = ((iterator + i) % 4)
                                     }
                                 } else {
+                                    if (player2.suit === player1.suit && player2.sort > player1.sort) {
+                                        winner = ((iterator + i) % 4)
+                                    }
                                     if (player2.suit !== player1.suit && player2.suit === table[tablename]['current']['trump'] && player2.isTrumpRevealed === true) {
                                         winner = ((iterator + i) % 4)
                                     }
