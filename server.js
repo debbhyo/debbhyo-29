@@ -160,9 +160,9 @@ function nextRound(tablename, type) {
             for (let i = 0;i < 4;i++) {
                 table[tablename]['p' + i]['tableCard'] = null
                 table[tablename]['p' + i]['bidPass'] = false
-                table[tablename]['p' + r]['points'] = 0
-                table[tablename]['p' + r]['hands'] = 0
-                table[tablename]['p' + r]['bid'] = 0
+                table[tablename]['p' + i]['points'] = 0
+                table[tablename]['p' + i]['hands'] = 0
+                table[tablename]['p' + i]['bid'] = 0
                 isKingQueenRevealed: false
             }
             table[tablename]['deck'] = shuffle(deck)
