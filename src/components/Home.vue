@@ -175,24 +175,39 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <form @submit.prevent="sendMessage">
-                            <div class="gorm-group pb-3">
-                                <label for="message">Message:</label>
-                                <input type="text" v-model="message" class="form-control">
-                            </div>
-                            <button type="submit" class="btn btn-success">Send</button>
-                        </form>
+                        <twemoji-textarea
+                                :emojiData="emojiDataAll"
+                                :emojiGroups="emojiGroups"
+                                @enterKey="onEnterKey">
+                        </twemoji-textarea>
                     </div>
                 </template>
             </div>
         </div>
     </div>
+
 </template>
 <script>
+    import {
+        TwemojiTextarea
+    } from '@kevinfaguiar/vue-twemoji-picker';
+    import EmojiAllData from '@kevinfaguiar/vue-twemoji-picker/emoji-data/en/emoji-all-groups.json';
+    import EmojiGroups from '@kevinfaguiar/vue-twemoji-picker/emoji-data/emoji-groups.json';
 import io from 'socket.io-client';
 import api from '@/services/api.js'
 export default {
     name: 'Home',
+    components: {
+        'twemoji-textarea': TwemojiTextarea
+    },
+    computed: {
+        emojiDataAll() {
+            return EmojiAllData;
+        },
+        emojiGroups() {
+            return EmojiGroups;
+        }
+    },
     data() {
         return {
             user: '',
@@ -211,6 +226,21 @@ export default {
     props: {
     },
     methods: {
+        onEnterKey(e) {
+            let input='';
+            if(Object.keys(e.srcElement.children).length>=1 && 'alt' in e.srcElement.children[0]) {
+                input = e.srcElement.innerText + e.srcElement.children[0].alt;
+            }
+            else {
+                input = e.srcElement.innerText;
+            }
+            this.socket.emit('SEND_MESSAGE', {
+                user: this.identityInfo.username,
+                message: input
+            });
+            this.message = ''
+            console.log(e.srcElement.innerHTML,e);
+        },
         getClassesByObject(payload) {
             let c = {};
             c['rank-' + payload.number.toLowerCase()] = true
@@ -233,7 +263,7 @@ export default {
         },
         initiateSocketConnection() {
             this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
-            // this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
+             //this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })
