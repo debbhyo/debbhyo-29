@@ -8,7 +8,7 @@
                             <div class="col-6">
                             <!-- <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 2) % 4)]['points']}})</h4></div> -->
                             <div class="col-12 palyer-1" style="text-align: center;">
-                                <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 2) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 2) % 4))}">
+                                <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 2) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 2) % 4)) || (tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 2) % 4))}">
                                     <ul class="hand">
                                         <li v-for="n in this.tableData['p' + ((this.tableData.me + 2) % 4)]['cardCount']">
                                             <div class="cardd back">*</div>
@@ -17,19 +17,21 @@
                                      <div style="width:100%;text-align: center;">
                                         <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4>
                                         <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 2) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 2) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 2) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 2) % 4)]['bid']}}</h4>
+                                        <h4 v-if="tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 2) % 4)">Setting Trump</h4>
+                                        <h4 v-if="tableData.current.round === 'GAME'">Points: {{this.tableData['p' + ((this.tableData.me + 2) % 4)]['points'] ? this.tableData['p' + ((this.tableData.me + 2) % 4)]['points'] : 0}}</h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-3" style="text-align: left">
                             <h5 class="mt-2">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
-                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.starter]['identity']['username']}}</h5>
-                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.starter]['bid']}}</h5>
+                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.winner]['identity']['username']}}</h5>
+                            <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.winner]['bid']}}</h5>
                         </div>
                     </div>
                     <div class="row board-middle-row">
                         <div class="col-3 palyer-1" style="text-align: center;">
-                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 3) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 3) % 4))}">
+                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 3) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 3) % 4)) || (tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 3) % 4))}">
                                 <ul class="hand">
                                     <li v-for="n in this.tableData['p' + ((this.tableData.me + 3) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
@@ -38,6 +40,8 @@
                                 <div style="width:100%;text-align: center;">
                                     <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}</h4>
                                     <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 3) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 3) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 3) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 3) % 4)]['bid']}}</h4>
+                                    <h4 v-if="tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 3) % 4)">Setting Trump</h4>
+                                     <h4 v-if="tableData.current.round === 'GAME'">Points: {{this.tableData['p' + ((this.tableData.me + 3) % 4)]['points'] ? this.tableData['p' + ((this.tableData.me + 3) % 4)]['points'] : 0}}</h4>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +80,7 @@
                             </div>
                         </div>
                         <div class="col-3 palyer-1" style="text-align: center;">
-                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 1) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 1) % 4))}">
+                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 1) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 1) % 4)) || (tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 1) % 4))}">
                                 <ul class="hand">
                                     <li v-for="n in this.tableData['p' + ((this.tableData.me + 1) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
@@ -85,6 +89,8 @@
                                 <div style="width:100%;text-align: center;">
                                     <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}</h4>
                                     <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 1) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 1) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 1) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 1) % 4)]['bid']}}</h4>
+                                    <h4 v-if="tableData.current.round === 'SET_TRUMP' && tableData.current.winner === ((this.tableData.me + 1) % 4)">Setting Trump</h4>
+                                     <h4 v-if="tableData.current.round === 'GAME'">Points: {{this.tableData['p' + ((this.tableData.me + 1) % 4)]['points'] ? this.tableData['p' + ((this.tableData.me + 1) % 4)]['points'] : 0}}</h4>
                                 </div>
                             </div>
                         </div>
@@ -240,7 +246,7 @@ export default {
                 // you can also do this.messages.push(data)
             });
             this.socket.on('UPDATE_TABLE', (data) => {
-                // console.log(data)
+                console.log(data)
                 this.tableData = data;
                 // you can also do this.messages.push(data)
             });

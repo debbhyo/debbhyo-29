@@ -187,6 +187,7 @@ function nextRound(tablename, type) {
                 isTrumpRevealed: false,
                 canRevealTrump: false,
                 turn: 1,
+                winner: winner,
                 player: winner,
                 starter: winner,
                 dealer: table[tablename]['dealer'],
@@ -303,6 +304,7 @@ function turn(socket, data) {
                     }
                     table[tablename].current.options = options
                 } else {
+                    data.card.isTrumpRevealed = data.isTrumpRevealed
                     if (table[tablename]['current']['turn'] === 1) {
                         console.log("Turn 1")
                         table[tablename]['current'].turnSuit = data.card.suit
@@ -325,13 +327,14 @@ function turn(socket, data) {
                         let winner = table[tablename]['current']['starter']
                         let starter = table[tablename]['current']['starter']
                         let iterator = table[tablename]['current']['starter']
-                        let points = 0;
-                        points += table[tablename]['p' + winner]['tableCard']['points']
+                        let points = table[tablename]['p' + winner]['tableCard']['points']
                         for (let i=1; i<=3; i++) {
+                            console.log("i is" + i)
                             let player1 = table[tablename]['p' + winner]['tableCard']
                             let player2 = table[tablename]['p' + ((iterator + i) % 4)]['tableCard']
                             points += table[tablename]['p' + ((iterator + i) % 4)]['tableCard']['points']
                             if (table[tablename]['current'].isTrumpRevealed === true) {
+                                console.log("trump isTrumpRevealed true")
                                 if (table[tablename]['current']['trump'] === "reverse") {
                                     if (table[tablename]['p' + starter]['tableCard']['isTrumpRevealed'] === true) {
                                         if (player2.suit === player1.suit && player2.sort < player1.sort) {
@@ -347,10 +350,13 @@ function turn(socket, data) {
                                         winner = ((iterator + i) % 4)
                                     }
                                 } else {
+                                    console.log("normal trump")
                                     if (player2.suit === player1.suit && player2.sort > player1.sort) {
+                                        console.log("suit winner:" + ((iterator + i) % 4))
                                         winner = ((iterator + i) % 4)
                                     }
                                     if (player2.suit !== player1.suit && player2.suit === table[tablename]['current']['trump'] && player2.isTrumpRevealed === true) {
+                                        console.log("trump winner:" + ((iterator + i) % 4))
                                         winner = ((iterator + i) % 4)
                                     }
                                 }
