@@ -166,7 +166,7 @@ function nextRound(tablename, type) {
                 isKingQueenRevealed: false
             }
             table[tablename]['deck'] = shuffle(deck)
-            table[tablename]['dealer'] += 1;
+            table[tablename]['dealer'] = (table[tablename]['dealer'] + 1) % 4;
             nextRound(tablename, "BIDDING")
             return
             break
@@ -232,7 +232,7 @@ function turn(socket, data) {
                                                 table[tablename]['current'].bidder = (player + i + 1) % 4
                                                 break
                                             } else {
-                                                table[tablename]['current'].winner = player + i
+                                                table[tablename]['current'].winner = (player + i) % 4
                                                 nextRound(tablename,"SET_TRUMP")
                                                 return
                                             }
