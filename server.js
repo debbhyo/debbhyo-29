@@ -346,7 +346,7 @@ function turn(socket, data) {
                                         winner = ((iterator + i) % 4)
                                     }
                                 } else {
-                                    if (player2.suit !== player1.suit && player2.suit === table[tablename]['current']['trump']) {
+                                    if (player2.suit !== player1.suit && player2.suit === table[tablename]['current']['trump'] && player2.isTrumpRevealed === true) {
                                         winner = ((iterator + i) % 4)
                                     }
                                 }

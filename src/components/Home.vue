@@ -6,7 +6,7 @@
                     <div class="row board-row-top" style="text-align: center;">
                         <div class="col-3"></div>
                             <div class="col-6">
-                            <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4></div>
+                            <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 2) % 4)]['points']}})</h4></div>
                             <div class="col-12 palyer-1" style="transform: rotate(180deg); text-align: center;">
                                 <div style="width: 235px;">
                                     <ul class="hand">
@@ -31,7 +31,7 @@
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}</h4></div>
+                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 3) % 4)]['points']}})</h4></div>
                             </div>
                         </div>
                         <div class="col-6">
@@ -75,7 +75,7 @@
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}</h4></div>
+                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 1) % 4)]['points']}})</h4></div>
                             </div>
                         </div>
                     </div>
