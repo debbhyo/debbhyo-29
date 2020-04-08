@@ -383,11 +383,11 @@ function turn(socket, data) {
                         table[tablename]['current'].canRevealTrump = false
 
                         if (table[tablename].current.game === 8) {
-                            setImmediate((arg) => {
+                            setTimeout((arg) => {
                               nextRound(tablename, "NEXT_GAME")
                             }, 2000);
                         } else {
-                            setImmediate((arg) => {
+                            setTimeout((arg) => {
                               nextRound(tablename, "NEXT_ROUND")
                             }, 2000);
                         }
