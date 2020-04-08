@@ -232,8 +232,8 @@ export default {
             this.message = ''
         },
         initiateSocketConnection() {
-            // this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
-            this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
+            this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
+            // this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })

@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
-    origin: 'http://localhost:8080',
-  // origin: 'http://29.debbhyo.xyz',
+    // origin: 'http://localhost:8080',
+  origin: 'http://29.debbhyo.xyz',
   credentials:true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
@@ -161,7 +161,9 @@ function nextRound(tablename, type) {
                 table[tablename]['p' + i]['tableCard'] = null
                 table[tablename]['p' + i]['bidPass'] = false
                 table[tablename]['p' + r]['points'] = 0
+                table[tablename]['p' + r]['hands'] = 0
                 table[tablename]['p' + r]['bid'] = 0
+                isKingQueenRevealed: false
             }
             table[tablename]['deck'] = shuffle(deck)
             table[tablename]['dealer'] += 1;
@@ -186,6 +188,7 @@ function nextRound(tablename, type) {
                 trump: trump,
                 isTrumpRevealed: false,
                 canRevealTrump: false,
+                isKingQueenRevealed: false,
                 turn: 1,
                 winner: winner,
                 player: winner,
@@ -367,9 +370,14 @@ function turn(socket, data) {
                             }
                         }
                         if (table[tablename]['p' + winner]['points']) {
-                            table[tablename]['p' + winner]['points'] += points
+                            table[tablename]['p' + winner]['points'] += 1
                         } else {
-                            table[tablename]['p' + winner]['points'] = points
+                            table[tablename]['p' + winner]['points'] = 1
+                        }
+                        if (table[tablename]['p' + winner]['hands']) {
+                            table[tablename]['p' + winner]['hands'] += 1
+                        } else {
+                            table[tablename]['p' + winner]['hands'] = 1
                         }
                         table[tablename]['current']['roundWinner'] = winner
                         table[tablename]['current'].canRevealTrump = false
