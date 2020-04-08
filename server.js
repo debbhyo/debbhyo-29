@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
-    // origin: 'http://localhost:8080',
-  origin: 'http://29.debbhyo.xyz',
+    //origin: 'http://localhost:8080',
+    origin: 'http://29.debbhyo.xyz',
   credentials:true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
@@ -354,7 +354,7 @@ function turn(socket, data) {
                                     }
                                 } else {
                                     console.log("normal trump")
-                                    if (player2.suit === player1.suit && player2.sort > player1.sort && player2.isTrumpRevealed === true) {
+                                    if (player2.suit === player1.suit && player2.sort > player1.sort) {
                                         console.log("suit winner:" + ((iterator + i) % 4))
                                         winner = ((iterator + i) % 4)
                                     }
