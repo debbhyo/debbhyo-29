@@ -6,14 +6,18 @@
                     <div class="row board-row-top" style="text-align: center;">
                         <div class="col-3"></div>
                             <div class="col-6">
-                            <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 2) % 4)]['points']}})</h4></div>
-                            <div class="col-12 palyer-1" style="transform: rotate(180deg); text-align: center;">
-                                <div style="width: 235px;">
+                            <!-- <div style="width:100%;"><h4 class="mb-0">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 2) % 4)]['points']}})</h4></div> -->
+                            <div class="col-12 palyer-1" style="text-align: center;">
+                                <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 2) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 2) % 4))}">
                                     <ul class="hand">
                                         <li v-for="n in this.tableData['p' + ((this.tableData.me + 2) % 4)]['cardCount']">
                                             <div class="cardd back">*</div>
                                         </li>
                                     </ul>
+                                     <div style="width:100%;text-align: center;">
+                                        <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 2) % 4)]['identity']['username']}}</h4>
+                                        <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 2) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 2) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 2) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 2) % 4)]['bid']}}</h4>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -25,13 +29,16 @@
                     </div>
                     <div class="row board-middle-row">
                         <div class="col-3 palyer-1" style="text-align: center;">
-                            <div style="transform: rotate(90deg); width: 235px;">
+                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 3) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 3) % 4))}">
                                 <ul class="hand">
                                     <li v-for="n in this.tableData['p' + ((this.tableData.me + 3) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 3) % 4)]['points']}})</h4></div>
+                                <div style="width:100%;text-align: center;">
+                                    <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['identity']['username']}}</h4>
+                                    <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 3) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 3) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 3) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 3) % 4)]['bid']}}</h4>
+                                </div>
                             </div>
                         </div>
                         <div class="col-6">
@@ -69,13 +76,16 @@
                             </div>
                         </div>
                         <div class="col-3 palyer-1" style="text-align: center;">
-                            <div style="transform: rotate(-90deg); width: 235px;">
+                            <div style="width: 235px;" :class="{'quadrat': (tableData.current.round === 'BIDDING' && tableData.current.bidder === ((this.tableData.me + 1) % 4)) || (tableData.current.round === 'GAME' && tableData.current.player === ((this.tableData.me + 1) % 4))}">
                                 <ul class="hand">
                                     <li v-for="n in this.tableData['p' + ((this.tableData.me + 1) % 4)]['cardCount']">
                                         <div class="cardd back">*</div>
                                     </li>
                                 </ul>
-                                <div style="width:100%;text-align: center;"><h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}({{this.tableData['p' + ((this.tableData.me + 1) % 4)]['points']}})</h4></div>
+                                <div style="width:100%;text-align: center;">
+                                    <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me + 1) % 4)]['identity']['username']}}</h4>
+                                    <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me + 1) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me + 1) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me + 1) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me + 1) % 4)]['bid']}}</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -216,7 +226,8 @@ export default {
             this.message = ''
         },
         initiateSocketConnection() {
-            this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
+            // this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
+            this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })
