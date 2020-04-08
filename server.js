@@ -354,7 +354,7 @@ function turn(socket, data) {
                                     }
                                 } else {
                                     console.log("normal trump")
-                                    if (player2.suit === player1.suit && player2.sort > player1.sort) {
+                                    if (player2.suit === player1.suit && player2.sort > player1.sort && player2.isTrumpRevealed === true) {
                                         console.log("suit winner:" + ((iterator + i) % 4))
                                         winner = ((iterator + i) % 4)
                                     }
