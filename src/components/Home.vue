@@ -246,7 +246,7 @@ export default {
                 // you can also do this.messages.push(data)
             });
             this.socket.on('UPDATE_TABLE', (data) => {
-                console.log(data)
+                // console.log(data)
                 this.tableData = data;
                 // you can also do this.messages.push(data)
             });
