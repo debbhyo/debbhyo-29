@@ -185,6 +185,9 @@
                                 ref="twemoji"
                                 :emojiData="emojiDataAll"
                                 :emojiGroups="emojiGroups"
+                                :enableSendBtn=true
+                                @emojiImgAdded="emojiImgAdded"
+                                @emitEnterKeyEvent="onEnterKey"
                                 @enterKey="onEnterKey">
                         </twemoji-textarea>
                     </div>
@@ -233,9 +236,12 @@ export default {
     props: {
     },
     methods: {
+        emojiImgAdded() {
+            this.$refs.twemoji.focus();
+        },
         onEnterKey(e) {
             let input='';
-            input = e.srcElement.innerHTML;
+            input = this.$refs.twemoji.twemojiTextarea.innerHTML;
             this.socket.emit('SEND_MESSAGE', {
                 user: this.identityInfo.username,
                 message: input
