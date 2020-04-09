@@ -382,7 +382,7 @@ function turn(socket, data) {
                         table[tablename]['current']['roundWinner'] = winner
                         table[tablename]['current'].canRevealTrump = false
 
-                        if (table[tablename].current.game === 8) {
+                        if (table[tablename]['p' + winner]['cards'].length === 0) {
                             setTimeout((arg) => {
                               nextRound(tablename, "NEXT_GAME")
                             }, 2000);

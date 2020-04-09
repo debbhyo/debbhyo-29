@@ -115,7 +115,12 @@
                         </div>
                     </div>
                     <div class="row board-bottom-row">
-                        <div class="col-12 pt-2 quadrat" style="text-align: center; display:flex; align-items: center;justify-content: center;" v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me">
+                        <div class="col-2">
+                            <h4 class="mb-0 mt-4">{{this.tableData['p' + ((this.tableData.me) % 4)]['identity']['username']}}</h4>
+                            <h4 v-if="tableData.current.round === 'BIDDING' && (tableData['p' + ((this.tableData.me) % 4)]['bid'] > 15 || tableData['p' + ((this.tableData.me) % 4)]['bidPass'] === true)">Bid: {{this.tableData['p' + ((this.tableData.me) % 4)]['bidPass']=== true ? 'Passed' : this.tableData['p' + ((this.tableData.me) % 4)]['bid']}}</h4>
+                            <h4 v-if="tableData.current.round === 'GAME'">Points: {{this.tableData['p' + ((this.tableData.me) % 4)]['points'] ? this.tableData['p' + ((this.tableData.me) % 4)]['points'] : 0}}</h4>
+                        </div>
+                        <div class="col-8 pt-2 quadrat" style="text-align: center; display:flex; align-items: center;justify-content: center;" v-if="tableData.current && tableData.current.round === 'GAME' && tableData.current.player === tableData.me">
                             <template v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']">
                                 <a class="cardd" :class="getClasses(card.number,card.suit)" v-if="containsObject(card, tableData.current.options)" @click.stop.prevent="turn({card:card,isTrumpRevealed:tableData.current.isTrumpRevealed})">
                                     <span class="rank">{{card.number}}</span>
@@ -127,12 +132,13 @@
                                 </a>
                             </template>
                         </div>
-                        <div v-else class="col-12 pt-2" style="text-align: center; display:flex; align-items: center;justify-content: center;">
+                        <div v-else class="col-8 pt-2" style="text-align: center; display:flex; align-items: center;justify-content: center;">
                             <a class="cardd" :class="getClasses(card.number,card.suit)" v-for="(card,index) in this.tableData['p' + this.tableData.me]['cards']" :key="index">
                                 <span class="rank">{{card.number}}</span>
                                 <span class="suit" v-html="'&' + card.suit + ';'"></span>
                             </a>
                         </div>
+                        <div class="col-2"></div>
                     </div>
                 </div>
                 <div class="col-9 board-left" v-else>
