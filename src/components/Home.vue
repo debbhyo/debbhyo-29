@@ -279,6 +279,12 @@ export default {
             })
             this.socket.on('MESSAGE', (data) => {
                 this.messages = [...this.messages, data];
+                //console.log(data);
+                if(data.user!==this.identityInfo.username) {
+                    var sound='http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3';
+                    var audio = new Audio(sound);
+                    audio.play();
+                }
                 this.$nextTick(() => {
                     var container = this.$el.querySelector("#chatbox");
                     container.scrollTop = container.scrollHeight;
