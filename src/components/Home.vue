@@ -176,14 +176,18 @@
                         </div>
                         <div class="card-body">
                             <div class="messages" v-for="(msg, index) in messages" :key="index">
-                                <p><span class="font-weight-bold">{{ msg.user }}: </span>{{ msg.message }}</p>
+                                <p><span class="font-weight-bold">{{ msg.user }}: </span> <span class="font-weight-normal" v-html="msg.message"> </span></p>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
                         <twemoji-textarea
+                                ref="twemoji"
                                 :emojiData="emojiDataAll"
                                 :emojiGroups="emojiGroups"
+                                :enableSendBtn=true
+                                @emojiImgAdded="emojiImgAdded"
+                                @emitEnterKeyEvent="onEnterKey"
                                 @enterKey="onEnterKey">
                         </twemoji-textarea>
                     </div>
@@ -232,20 +236,20 @@ export default {
     props: {
     },
     methods: {
+        emojiImgAdded() {
+            this.$refs.twemoji.focus();
+        },
         onEnterKey(e) {
             let input='';
-            if(Object.keys(e.srcElement.children).length>=1 && 'alt' in e.srcElement.children[0]) {
-                input = e.srcElement.innerText + e.srcElement.children[0].alt;
-            }
-            else {
-                input = e.srcElement.innerText;
-            }
+            input = this.$refs.twemoji.twemojiTextarea.innerHTML;
             this.socket.emit('SEND_MESSAGE', {
                 user: this.identityInfo.username,
                 message: input
             });
             this.message = ''
-            console.log(e.srcElement.innerHTML,e);
+            //console.log(e)
+            this.$refs.twemoji.cleanText();
+
         },
         getClassesByObject(payload) {
             let c = {};
@@ -268,13 +272,19 @@ export default {
             this.message = ''
         },
         initiateSocketConnection() {
-            this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
+             this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
              //this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })
             this.socket.on('MESSAGE', (data) => {
                 this.messages = [...this.messages, data];
+                //console.log(data);
+                if(data.user!==this.identityInfo.username) {
+                    var sound='http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3';
+                    var audio = new Audio(sound);
+                    audio.play();
+                }
                 this.$nextTick(() => {
                     var container = this.$el.querySelector("#chatbox");
                     container.scrollTop = container.scrollHeight;
@@ -369,6 +379,9 @@ export default {
   -moz-animation: blinking-background 2s infinite;  /* Fx 5+ */
   -o-animation: blinking-background 2s infinite;  /* Opera 12+ */
   animation: blinking-background 2s infinite;  /* IE 10+, Fx 29+ */
+}
+img.emoji {
+    height: 24px;
 }
 
 @-webkit-keyframes blinking-background {
