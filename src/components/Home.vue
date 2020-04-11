@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class="col-6"  >
-                           <div class="playingArea spades" v-html="trumpBackground(tableData)">  </div>
+                           <div class="playingArea" v-html="trumpBackground(tableData)">  </div>
                             <div class="row h-100" >
                                 <div class="col-4 h-100" style="display: flex;align-items: center;justify-content: center;">
                                     <div class="cardd" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']">
@@ -284,7 +284,6 @@ export default {
                         break;
                     default:
                         return "";
-                    //return "'http://1.bp.blogspot.com/-8PfnHfgrH4I/TylX2v8pTMI/AAAAAAAAJJ4/TICBoSEI57o/s1600/search_by_image_image.png'" ;
                 }
             }
                 else return "";
@@ -412,9 +411,6 @@ export default {
     width: 100%;
     height: 100%;
     opacity: 0.3;
-}
-.spadeBackground{
-    background: url("../assets/spades.png");
 }
 .palyer-1 ul{
     display: flex
