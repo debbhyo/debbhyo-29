@@ -45,8 +45,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="row h-100">
+                        <div class="col-6"  >
+                           <div class="playingArea" v-html="trumpBackground(tableData)">  </div>
+                            <div class="row h-100" >
                                 <div class="col-4 h-100" style="display: flex;align-items: center;justify-content: center;">
                                     <div class="cardd" :class="getClassesByObject(this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard'])" style="text-align: center;" v-if="this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']">
                                         <span class="rank">{{this.tableData['p' + ((this.tableData.me + 3) % 4)]['tableCard']['number']}}</span>
@@ -169,7 +170,7 @@
                     </div>
                 </template>
                 <template v-else>
-                    <div class="card-body" id="chatbox" style="height:500px;overflow-y: scroll;">
+                    <div class="card-body" id="chatbox" style="height:600px;overflow-y: scroll;">
                         <div class="card-title">
                             <h3>Chat</h3>
                             <hr>
@@ -190,6 +191,10 @@
                                 @emitEnterKeyEvent="onEnterKey"
                                 @enterKey="onEnterKey">
                         </twemoji-textarea>
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="customSwitches" @click="mutevoice()">
+                            <label class="custom-control-label" for="customSwitches">Mute Sound</label>
+                        </div>
                     </div>
                 </template>
             </div>
@@ -222,6 +227,7 @@ export default {
         return {
             user: '',
             message: '',
+            isMuted: false,
             table: '',
             messages: [],
             socket : null,
@@ -236,6 +242,10 @@ export default {
     props: {
     },
     methods: {
+        mutevoice(){
+            this.isMuted = !this.isMuted;
+            console.log(this.isMuted);
+        },
         emojiImgAdded() {
             this.$refs.twemoji.focus();
         },
@@ -250,6 +260,33 @@ export default {
             //console.log(e)
             this.$refs.twemoji.cleanText();
 
+        },
+        trumpBackground(trumpdata){
+            if(trumpdata.current.isTrumpRevealed) {
+                switch(trumpdata.current.trump) {
+                    case "spades":
+                        return "&spades;";
+                        break;
+                    case "clubs":
+                        return "&clubs;";
+                        break;
+                    case "diams":
+                        return "&diams;";
+                        break;
+                    case "hearts":
+                        return "&hearts;";
+                        break;
+                    case "reverse":
+                        return "&#x25C0;";
+                        break;
+                    case "no-trump":
+                        return "&#x26D4;";
+                        break;
+                    default:
+                        return "";
+                }
+            }
+                else return "";
         },
         getClassesByObject(payload) {
             let c = {};
@@ -280,7 +317,8 @@ export default {
             this.socket.on('MESSAGE', (data) => {
                 this.messages = [...this.messages, data];
                 //console.log(data);
-                if(data.user!==this.identityInfo.username) {
+                if(data.user!==this.identityInfo.username && !this.isMuted) {
+                    //console.log('passed soundcheck',!this.isMuted)
                     var sound='http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3';
                     var audio = new Audio(sound);
                     audio.play();
@@ -365,6 +403,14 @@ export default {
 .palyer-1 {
     display: flex;
     justify-content: center;
+}
+.playingArea{
+    text-align: center;
+    position: absolute;
+    font-size: 250px;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
 }
 .palyer-1 ul{
     display: flex
