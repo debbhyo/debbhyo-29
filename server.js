@@ -77,12 +77,12 @@ function fairgamecheck(array) {
     for (let j = 0;j < 4; j++) {
         let player = 'p' + (j % 4);
         checkertable[player] = {};
-        checkertable[player]['cards'] = [];
+        //checkertable[player]['cards'] = [];
         checkertable[player]['pointSum'] = 0;
         checkertable[player]['jackCount'] = 0;
         for (let k = 0;k < 4; k++) {
             var newCard = cardsArray[copyArray.pop()];
-            checkertable[player]['cards'].push(newCard);
+            //checkertable[player]['cards'].push(newCard);
             checkertable[player]['pointSum'] = checkertable[player]['pointSum'] + newCard.points;
             checkertable[player]['jackCount'] = checkertable[player]['jackCount'] + (newCard.number === 'J' ? 1 : 0) ;
         }
@@ -99,7 +99,7 @@ function fairgamecheck(array) {
         let player = 'p' + (j % 4);
         for (let k = 0;k < 4; k++) {
             var newCard = cardsArray[copyArray.pop()];
-            checkertable[player]['cards'].push(newCard);
+            //checkertable[player]['cards'].push(newCard);
             checkertable[player]['pointSum'] = checkertable[player]['pointSum'] + newCard.points;
             checkertable[player]['jackCount'] = checkertable[player]['jackCount'] + (newCard.number === 'J' ? 1 : 0) ;
         }
@@ -107,7 +107,7 @@ function fairgamecheck(array) {
     for(let i = 0;i < 4; i++) {
         let player = 'p' + (i % 4);
         let teamPartner = 'p' + ((i + 2) % 4);
-        if(((checkertable[player]['pointSum'] + checkertable[teamPartner]['pointSum']) === 0) || ((checkertable[player]['jackCount'] + checkertable[teamPartner]['jackCount']) === 4)) {
+        if((checkertable[player]['jackCount'] + checkertable[teamPartner]['jackCount']) === 4) {
             //console.log(checkertable);
             return false;
         }
