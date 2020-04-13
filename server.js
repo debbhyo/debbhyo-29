@@ -71,6 +71,51 @@ function generateIdentity() {
     return result;
 }
 
+function fairgamecheck(array) {
+    var copyArray = array.slice();
+    var checkertable = {};
+    for (let j = 0;j < 4; j++) {
+        let player = 'p' + (j % 4);
+        checkertable[player] = {};
+        //checkertable[player]['cards'] = [];
+        checkertable[player]['pointSum'] = 0;
+        checkertable[player]['jackCount'] = 0;
+        for (let k = 0;k < 4; k++) {
+            var newCard = cardsArray[copyArray.pop()];
+            //checkertable[player]['cards'].push(newCard);
+            checkertable[player]['pointSum'] = checkertable[player]['pointSum'] + newCard.points;
+            checkertable[player]['jackCount'] = checkertable[player]['jackCount'] + (newCard.number === 'J' ? 1 : 0) ;
+        }
+    }
+    for(let i = 0;i < 4; i++) {
+        let player = 'p' + (i % 4);
+        let teamPartner = 'p' + ((i + 2) % 4);
+        if (checkertable[player]['pointSum'] === 0 || ((checkertable[player]['jackCount'] + checkertable[teamPartner]['jackCount']) === 4)) {
+            //console.log(checkertable);
+            return false;
+        }
+    }
+    for (let j = 0;j < 4; j++) {
+        let player = 'p' + (j % 4);
+        for (let k = 0;k < 4; k++) {
+            var newCard = cardsArray[copyArray.pop()];
+            //checkertable[player]['cards'].push(newCard);
+            checkertable[player]['pointSum'] = checkertable[player]['pointSum'] + newCard.points;
+            checkertable[player]['jackCount'] = checkertable[player]['jackCount'] + (newCard.number === 'J' ? 1 : 0) ;
+        }
+    }
+    for(let i = 0;i < 4; i++) {
+        let player = 'p' + (i % 4);
+        let teamPartner = 'p' + ((i + 2) % 4);
+        if((checkertable[player]['jackCount'] + checkertable[teamPartner]['jackCount']) === 4) {
+            //console.log(checkertable);
+            return false;
+        }
+    }
+    //console.log(checkertable);
+    return true;
+}
+
 function shuffle(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -87,7 +132,7 @@ function shuffle(array) {
     array[randomIndex] = temporaryValue;
   }
 
-  return array;
+  return fairgamecheck(array) ? array : shuffle(array);
 }
 
 function startGame(tablename) {
