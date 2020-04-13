@@ -24,7 +24,7 @@
                             </div>
                         </div>
                         <div class="col-3" style="text-align: left">
-                            <h5 class="mt-2">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
+                            <h5 class="mt-2" :style="{'yellow-background': tableData.current.isTrumpRevealed}">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.winner]['identity']['username']}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.winner]['bid']}}</h5>
                         </div>
@@ -419,6 +419,9 @@ export default {
     margin-right: auto !important;*/
 }
 .palyer-1 ul li{
+}
+.yellow-background{
+    background-color: yellow;
 }
 .quadrat {
   -webkit-animation: blinking-background 2s infinite;  /* Safari 4+ */

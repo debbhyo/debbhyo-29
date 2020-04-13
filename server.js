@@ -307,6 +307,9 @@ function turn(socket, data) {
                     }
                     table[tablename].current.options = options
                 } else {
+                    if (table[tablename]['p' + player]['tableCard']) {
+                        return
+                    }
                     data.card.isTrumpRevealed = data.isTrumpRevealed
                     if (table[tablename]['current']['turn'] === 1) {
                         console.log("Turn 1")
