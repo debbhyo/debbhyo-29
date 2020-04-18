@@ -27,7 +27,7 @@
                             <h5 class="mt-2" :style="{'yellow-background': tableData.current.isTrumpRevealed}">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.winner]['identity']['username']}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.winner]['bid']}}</h5>
-                            <button @click="resetGame()" class="btn btn-outline-info" :disabled="resetRequested">Request Reset</button>
+                            <button @click="resetGame()" class="btn btn-outline-info" :disabled="tableData['p' + this.tableData.me ]['isResetRequested']">Request Reset</button>
                         </div>
                     </div>
                     <div class="row board-middle-row">
@@ -253,7 +253,7 @@ export default {
         },
         mutevoice(){
             this.isMuted = !this.isMuted;
-            console.log(this.isMuted);
+            //console.log(this.isMuted);
         },
         emojiImgAdded() {
             this.$refs.twemoji.focus();
@@ -275,22 +275,16 @@ export default {
                 switch(trumpdata.current.trump) {
                     case "spades":
                         return "&spades;";
-                        break;
                     case "clubs":
                         return "&clubs;";
-                        break;
                     case "diams":
                         return "&diams;";
-                        break;
                     case "hearts":
                         return "&hearts;";
-                        break;
                     case "reverse":
                         return "&#x25C0;";
-                        break;
                     case "no-trump":
                         return "&#x26D4;";
-                        break;
                     default:
                         return "";
                 }

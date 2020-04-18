@@ -23,7 +23,7 @@ var identities = {}
 var table = {
     qwerty123:{
         playersCount:0,
-        resetRequest:[]
+        resetRequestCounter:0
     }
 }
 var cardsArray = [
@@ -159,12 +159,27 @@ function syncTable(tablename) {
     }
 }
 
+function resetGame(socket) {
+    let player = findPlayerFromSocket(socket)
+    let tablename = "qwerty123"
+    table[tablename]['p' + player]['isResetRequested'] = true
+    table["qwerty123"].resetRequestCounter += 1
+    syncTable(tablename)
+    if (table["qwerty123"].resetRequestCounter  === 4) {
+        table["qwerty123"].resetRequestCounter = 0
+        nextRound(tablename, "RESET_GAME")
+    }
+    console.log("socket player reset request:" + player)
+    //console.log(table)
+}
+
 function nextRound(tablename, type) {
     switch(type){
         case "BIDDING":
             for (let j = 0;j < 4; j++) {
                 let player = 'p' + ((table[tablename]['dealer'] + j) % 4)
                 table[tablename][player]['cards'] = []
+                table[tablename][player]['isResetRequested'] = false
                 for (let k = 0;k < 4; k++) {
                     table[tablename][player]['cards'].push(cardsArray[table[tablename]['deck'].pop()])
                 }
@@ -197,6 +212,7 @@ function nextRound(tablename, type) {
             table[tablename]['current']['options'] = table[tablename]['p'+(table[tablename]['current']['roundWinner'])]['cards']
             break
 
+        case "RESET_GAME":
         case "NEXT_GAME":
             table[tablename]['deck'] = []
             let deck = []
@@ -209,10 +225,13 @@ function nextRound(tablename, type) {
                 table[tablename]['p' + i]['points'] = 0
                 table[tablename]['p' + i]['hands'] = 0
                 table[tablename]['p' + i]['bid'] = 0
+                table[tablename]['p' + i]['isResetRequested'] = false
                 isKingQueenRevealed: false
             }
             table[tablename]['deck'] = shuffle(deck)
-            table[tablename]['dealer'] = (table[tablename]['dealer'] + 1) % 4;
+            if (type === "NEXT_GAME") {
+                table[tablename]['dealer'] = (table[tablename]['dealer'] + 1) % 4;
+            }
             nextRound(tablename, "BIDDING")
             return
             break
@@ -256,18 +275,6 @@ function findPlayerFromSocket(socket) {
         }
     }
     return null
-}
-function resetGame(socket) {
-    let player = findPlayerFromSocket(socket)
-    let tablename = "qwerty123"
-    if (!table[tablename]["resetRequest"].includes(player)){
-        table[tablename]["resetRequest"].push(player)
-    }
-    if (table[tablename]["resetRequest"].length === 4) {
-        nextRound(tablename, "NEXT_GAME")
-    }
-    console.log("socket player reset request:" + player)
-    //console.log(table)
 }
 
 function turn(socket, data) {
