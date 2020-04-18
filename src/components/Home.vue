@@ -188,6 +188,9 @@
                                 :emojiData="emojiDataAll"
                                 :emojiGroups="emojiGroups"
                                 :enableSendBtn=true
+                                :recentEmojisFeat = true
+                                :recentEmojisStorage = 'session'
+                                :searchEmojisFeat = true
                                 @emojiImgAdded="emojiImgAdded"
                                 @emitEnterKeyEvent="onEnterKey"
                                 @enterKey="onEnterKey">
