@@ -248,7 +248,6 @@ export default {
     methods: {
         resetGame(){
             this.socket.emit('RESETGAME');
-            this.resetRequested=!this.resetRequested;
         },
         mutevoice(){
             this.isMuted = !this.isMuted;
