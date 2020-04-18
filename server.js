@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
-    origin: 'http://localhost:8080',
-    //origin: 'http://29.debbhyo.xyz',
+    //origin: 'http://localhost:8080',
+    origin: 'http://29.debbhyo.xyz',
   credentials:true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
