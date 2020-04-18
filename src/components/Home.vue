@@ -232,7 +232,6 @@ export default {
             user: '',
             message: '',
             isMuted: false,
-            resetRequested: false,
             table: '',
             messages: [],
             socket : null,
