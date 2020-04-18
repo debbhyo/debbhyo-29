@@ -27,6 +27,7 @@
                             <h5 class="mt-2" :style="{'yellow-background': tableData.current.isTrumpRevealed}">Trump: {{tableData.current.isTrumpRevealed ? tableData.current.trump : 'Not Open'}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bidder: {{tableData['p'+tableData.current.winner]['identity']['username']}}</h5>
                             <h5 class="mt-2" v-if="tableData.current.round === 'GAME'">Bid: {{tableData['p'+tableData.current.winner]['bid']}}</h5>
+                            <button @click="resetGame()" class="btn btn-outline-info" :disabled="resetRequested">Request Reset</button>
                         </div>
                     </div>
                     <div class="row board-middle-row">
@@ -228,6 +229,7 @@ export default {
             user: '',
             message: '',
             isMuted: false,
+            resetRequested: false,
             table: '',
             messages: [],
             socket : null,
@@ -242,6 +244,10 @@ export default {
     props: {
     },
     methods: {
+        resetGame(){
+            this.socket.emit('RESETGAME');
+            this.resetRequested=!this.resetRequested;
+        },
         mutevoice(){
             this.isMuted = !this.isMuted;
             console.log(this.isMuted);
@@ -309,8 +315,8 @@ export default {
             this.message = ''
         },
         initiateSocketConnection() {
-             this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
-             //this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
+             //this.socket = io('http://159.65.153.201:3009', {query : "identity=" + this.identity,autoConnect: false})
+             this.socket = io('http://localhost:3009', {query : "identity=" + this.identity,autoConnect: false})
             this.socket.on('connect', () => {
                 this.socket.emit('UPDATE_ME')
             })

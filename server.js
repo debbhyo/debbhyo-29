@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 app.use(session({secret: "sdasds a secret!"}));
 var corsOptions = {
-    //origin: 'http://localhost:8080',
-    origin: 'http://29.debbhyo.xyz',
+    origin: 'http://localhost:8080',
+    //origin: 'http://29.debbhyo.xyz',
   credentials:true,
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
@@ -22,7 +22,8 @@ app.use(cors(corsOptions))
 var identities = {}
 var table = {
     qwerty123:{
-        playersCount:0
+        playersCount:0,
+        resetRequest:[]
     }
 }
 var cardsArray = [
@@ -255,6 +256,18 @@ function findPlayerFromSocket(socket) {
         }
     }
     return null
+}
+function resetGame(socket) {
+    let player = findPlayerFromSocket(socket)
+    let tablename = "qwerty123"
+    if (!table[tablename]["resetRequest"].includes(player)){
+        table[tablename]["resetRequest"].push(player)
+    }
+    if (table[tablename]["resetRequest"].length === 4) {
+        nextRound(tablename, "NEXT_GAME")
+    }
+    console.log("socket player reset request:" + player)
+    //console.log(table)
 }
 
 function turn(socket, data) {
@@ -531,6 +544,9 @@ io.on('connection', function(socket) {
         });
         socket.on('UPDATE_ME', function(data) {
                 syncTable("qwerty123")
+        });
+        socket.on('RESETGAME', function() {
+            resetGame(socket.id)
         });
         socket.on('TURN', (data) => {
             turn(socket.id, data)
